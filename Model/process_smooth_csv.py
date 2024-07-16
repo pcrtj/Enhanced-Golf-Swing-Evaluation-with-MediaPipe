@@ -29,10 +29,17 @@ for idx, file in enumerate(csv_files):
 
     # Apply the Savitzky-Golay filter to each column if the number of data points is sufficient
     columns_to_filter = [
-        'Left Shoulder', 'Right Shoulder', 
-        'Left Elbow', 'Right Elbow', 
-        'Left Hip', 'Right Hip', 
-        'Left Knee', 'Right Knee'
+        'Left Shoulder Angle', 'Right Shoulder Angle', 
+        'Left Elbow Angle', 'Right Elbow Angle', 
+        'Left Hip Angle', 'Right Hip Angle', 
+        'Left Knee Angle', 'Right Knee Angle', 
+        # 'x, y Left Shoulder', 'x, y Right Shoulder', 
+        # 'x, y Left Elbow', 'x, y Right Elbow',
+        # 'x, y Left Hip', 'x, y Right Hip', 
+        # 'x, y Left Knee', 'x, y Right Knee',
+        # 'x, y Left Wrist', 'x, y Right Wrist', 
+        # 'x, y Left Ankle', 'x, y Right Ankle', 
+        # 'x, y Nose'
     ]
     
     for col in columns_to_filter:
@@ -50,3 +57,4 @@ for idx, file in enumerate(csv_files):
     df.to_csv(output_file_path, index=False)
 
 print(f"Smoothing and saving completed. Number of files with insufficient data points: {insufficient_data_files}")
+
