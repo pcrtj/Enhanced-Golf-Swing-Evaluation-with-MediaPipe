@@ -26,10 +26,17 @@ for filename in os.listdir(input_path):
         data['Spine Hip X'] = (data['Left Hip X'] + data['Right Hip X']) / 2
         data['Spine Hip Y'] = (data['Left Hip Y'] + data['Right Hip Y']) / 2
 
-        data['Spine Angle'] = np.degrees(np.arctan2(data['Spine Shoulder Y'] - data['Spine Hip Y'], data['Spine Shoulder X'] - data['Spine Hip X']))
+        data['x, y Shoulder Spine'] = data.apply(lambda row: f"{row['Spine Shoulder X']:.3f}, {row['Spine Shoulder Y']:.3f}", axis=1)
+        data['x, y Hip Spine'] = data.apply(lambda row: f"{row['Spine Hip X']:.3f}, {row['Spine Hip Y']:.3f}", axis=1)
 
+        data['Spine Angle'] = np.degrees(np.arctan2(data['Spine Shoulder Y'] - data['Spine Hip Y'], data['Spine Shoulder X'] - data['Spine Hip X']))
         data['Leaning'] = np.where(data['Spine Angle'] > 0, 'Backward', 'Forward')
 
-        output_filename = f"{filename}_spine.csv"
+    
+        data.drop(columns=['Left Shoulder X', 'Left Shoulder Y', 'Right Shoulder X', 'Right Shoulder Y',
+                         'Left Hip X', 'Left Hip Y', 'Right Hip X', 'Right Hip Y', 'Spine Shoulder X',
+                         'Spine Shoulder Y', 'Spine Hip X', 'Spine Hip Y'], inplace=True)
+
+        output_filename = f"spine_{filename}"
         output_file_path = os.path.join(output_path, output_filename)
         data.to_csv(output_file_path, index=False)

@@ -115,13 +115,19 @@ def process_video(video_path, output_path, csv_folder):
 
                     csv_writer.writerow([cap.get(cv2.CAP_PROP_POS_MSEC) / 1000, angle_left_shoulder, angle_right_shoulder, 
                                          angle_left_elbow, angle_right_elbow, angle_left_hip, angle_right_hip, angle_left_knee, angle_right_knee,
-                                         f"{left_shoulder[0]}, {left_shoulder[1]}", f"{right_shoulder[0]}, {right_shoulder[1]}", 
-                                         f"{left_elbow[0]}, {left_elbow[1]}", f"{right_elbow[0]}, {right_elbow[1]}",
-                                         f"{left_hip[0]}, {left_hip[1]}", f"{right_hip[0]}, {right_hip[1]}",
-                                         f"{left_knee[0]}, {left_knee[1]}", f"{right_knee[0]}, {right_knee[1]}",
-                                         f"{left_wrist[0]}, {left_wrist[1]}", f"{right_wrist[0]}, {right_wrist[1]}",
-                                         f"{left_ankle[0]}, {left_ankle[1]}", f"{right_ankle[0]}, {right_ankle[1]}",
-                                         f"{nose[0]}, {nose[1]}"])
+                                         f"{left_shoulder[0]:.3f}, {left_shoulder[1]:.3f}",
+                                         f"{right_shoulder[0]:.3f}, {right_shoulder[1]:.3f}",
+                                         f"{left_elbow[0]:.3f}, {left_elbow[1]:.3f}",
+                                         f"{right_elbow[0]:.3f}, {right_elbow[1]:.3f}",
+                                         f"{left_hip[0]:.3f}, {left_hip[1]:.3f}",
+                                         f"{right_hip[0]:.3f}, {right_hip[1]:.3f}",
+                                         f"{left_knee[0]:.3f}, {left_knee[1]:.3f}",
+                                         f"{right_knee[0]:.3f}, {right_knee[1]:.3f}",
+                                         f"{left_wrist[0]:.3f}, {left_wrist[1]:.3f}",
+                                         f"{right_wrist[0]:.3f}, {right_wrist[1]:.3f}",
+                                         f"{left_ankle[0]:.3f}, {left_ankle[1]:.3f}",
+                                         f"{right_ankle[0]:.3f}, {right_ankle[1]:.3f}",
+                                         f"{nose[0]:.3f}, {nose[1]:.3f}"])
 
                 if results.pose_landmarks:
                     mp_drawing.draw_landmarks(
