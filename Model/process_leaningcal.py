@@ -16,26 +16,34 @@ for filename in os.listdir(input_path):
 
         data = pd.read_csv(file_path)
 
+        # แยกคอลัมน์ x และ y
         data[['Left Shoulder X', 'Left Shoulder Y']] = data['x, y Left Shoulder'].str.split(',', expand=True).astype(float)
         data[['Right Shoulder X', 'Right Shoulder Y']] = data['x, y Right Shoulder'].str.split(',', expand=True).astype(float)
         data[['Left Hip X', 'Left Hip Y']] = data['x, y Left Hip'].str.split(',', expand=True).astype(float)
         data[['Right Hip X', 'Right Hip Y']] = data['x, y Right Hip'].str.split(',', expand=True).astype(float)
 
+        # คำนวณจุดกึ่งกลางของไหล่และสะโพก
         data['Spine Shoulder X'] = (data['Left Shoulder X'] + data['Right Shoulder X']) / 2
         data['Spine Shoulder Y'] = (data['Left Shoulder Y'] + data['Right Shoulder Y']) / 2
         data['Spine Hip X'] = (data['Left Hip X'] + data['Right Hip X']) / 2
         data['Spine Hip Y'] = (data['Left Hip Y'] + data['Right Hip Y']) / 2
 
-        data['x, y Shoulder Spine'] = data.apply(lambda row: f"{row['Spine Shoulder X']:.3f}, {row['Spine Shoulder Y']:.3f}", axis=1)
-        data['x, y Hip Spine'] = data.apply(lambda row: f"{row['Spine Hip X']:.3f}, {row['Spine Hip Y']:.3f}", axis=1)
+        # คำนวณมุมการโค้งข้างของกระดูกสันหลัง (Lateral Bending Angle)
+        data['Lateral Bending Angle'] = np.degrees(np.arctan2(data['Spine Hip X'] - data['Spine Shoulder X'], data['Spine Hip Y'] - data['Spine Shoulder Y']))
 
-        data['Spine Angle'] = np.degrees(np.arctan2(data['Spine Shoulder Y'] - data['Spine Hip Y'], data['Spine Shoulder X'] - data['Spine Hip X']))
-        data['Leaning'] = np.where(data['Spine Angle'] > 0, 'Backward', 'Forward')
+        # แสดงทิศทางการโน้ม (Leaning) มากกว่า 0 คือโน้มไปข้างหลัง เเละ น้อยกว่า 0 คือโน้มไปข้างหน้า
+        leaning = []
+        for angle in data['Lateral Bending Angle']:
+            if angle > 0:
+                leaning.append('Trailing Side')
+            else:
+                leaning.append('Leading Side')
+        data['Leaning'] = leaning
 
-    
+
         data.drop(columns=['Left Shoulder X', 'Left Shoulder Y', 'Right Shoulder X', 'Right Shoulder Y',
-                         'Left Hip X', 'Left Hip Y', 'Right Hip X', 'Right Hip Y', 'Spine Shoulder X',
-                         'Spine Shoulder Y', 'Spine Hip X', 'Spine Hip Y'], inplace=True)
+                           'Left Hip X', 'Left Hip Y', 'Right Hip X', 'Right Hip Y', 'Spine Shoulder X',
+                           'Spine Shoulder Y', 'Spine Hip X', 'Spine Hip Y'], inplace=True)
 
         output_filename = f"spine_{filename}"
         output_file_path = os.path.join(output_path, output_filename)
