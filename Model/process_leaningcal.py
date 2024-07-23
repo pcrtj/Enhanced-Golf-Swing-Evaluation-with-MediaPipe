@@ -2,8 +2,10 @@ import pandas as pd
 import numpy as np
 import os
 
-input_path = './output/videos_keyframedetection/raw_data/hpe_raw_data/smoothed_csv/'
-output_path = './output/videos_keyframedetection/raw_data/hpe_raw_data/spine_cal_csv'
+input_path = './output/videos_keyframedetection/raw_data/hpe_raw_data/csv'
+output_path = './output/videos_keyframedetection/raw_data/hpe_raw_data/spine_raw_csv'
+if not os.path.exists(output_path):
+    os.makedirs(output_path)
 
 total_files = len([f for f in os.listdir(input_path) if f.endswith(".csv")])
 file_counter = 0
@@ -16,13 +18,11 @@ for filename in os.listdir(input_path):
 
         data = pd.read_csv(file_path)
 
-        # แยกคอลัมน์ x และ y
         data[['Left Shoulder X', 'Left Shoulder Y']] = data['x, y Left Shoulder'].str.split(',', expand=True).astype(float)
         data[['Right Shoulder X', 'Right Shoulder Y']] = data['x, y Right Shoulder'].str.split(',', expand=True).astype(float)
         data[['Left Hip X', 'Left Hip Y']] = data['x, y Left Hip'].str.split(',', expand=True).astype(float)
         data[['Right Hip X', 'Right Hip Y']] = data['x, y Right Hip'].str.split(',', expand=True).astype(float)
 
-        # คำนวณจุดกึ่งกลางของไหล่และสะโพก
         data['Spine Shoulder X'] = (data['Left Shoulder X'] + data['Right Shoulder X']) / 2
         data['Spine Shoulder Y'] = (data['Left Shoulder Y'] + data['Right Shoulder Y']) / 2
         data['Spine Hip X'] = (data['Left Hip X'] + data['Right Hip X']) / 2
