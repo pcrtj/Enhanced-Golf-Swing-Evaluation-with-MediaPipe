@@ -1,50 +1,68 @@
 import os
-import numpy as np
 import pandas as pd
-from dtw import dtw
+import numpy as np
+from scipy.spatial.distance import euclidean
+from fastdtw import fastdtw
 
-# Define the input and output directories
-input_path = './output/videos_keyframedetection/raw_data/hpe_raw_data/spine_raw_csv/'
+input_path = './output/videos_keyframedetection/raw_data/hpe_raw_data/spine_smooth_csv'
 output_path = './output/videos_keyframedetection/raw_data/hpe_raw_data/dtw_spine_raw_csv/'
 if not os.path.exists(output_path):
     os.makedirs(output_path)
 
-# List of files
-input_files = ['spine_keyframe_0_angles.csv', 'spine_keyframe_1_angles.csv', 'spine_keyframe_2_angles.csv']
+# ฟังก์ชันในการอ่าน CSV และใช้ DTW
+def process_dtw(file_name):
+    # อ่านข้อมูลจากไฟล์
+    file_path = os.path.join(input_path, file_name)
+    data = pd.read_csv(file_path)
+    
+    reference_time = data["Time"].values
+    aligned_data = {"Time": reference_time}
 
-# Read CSV files into dataframes
-dfs = [pd.read_csv(os.path.join(input_path, file)) for file in input_files]
+    columns_of_interest = [
+    # "Time",
+    "Left Shoulder Angle",
+    "Right Shoulder Angle",
+    "Left Elbow Angle",
+    "Right Elbow Angle",
+    "Left Hip Angle",
+    "Right Hip Angle",
+    "Left Knee Angle",
+    "Right Knee Angle"
+]   
+    # ตรวจสอบว่ามีคอลัมน์ "Time" หรือไม่
+    if "Time" not in data.columns:
+        print(f"File {file_name} does not contain 'Time' column.")
+        return
+    # ตรวจสอบว่ามีคอลัมน์ที่สนใจทั้งหมดหรือไม่
+    missing_columns = [col for col in columns_of_interest if col not in data.columns]
+    if missing_columns:
+        print(f"File {file_name} is missing columns: {', '.join(missing_columns)}")
+        return
+    
+    # การใช้ DTW บนคอลัมน์ "Time"
+    
 
-# Function to split x,y coordinates into separate columns
-def split_coordinates(df):
-    new_df = pd.DataFrame()
-    for column in df.columns:
-        new_df[f'{column}_x'] = df[column].apply(lambda x: float(str(x).split(',')[0]))
-        new_df[f'{column}_y'] = df[column].apply(lambda x: float(str(x).split(',')[1]))
-    return new_df
+    for column in columns_of_interest:
+        column_data = data[column].values
+        distance, path = fastdtw(reference_time, column_data, dist=2)
+        aligned_column = np.array([column_data[j] for i, j in path])
+        
+        # Check if aligned_column is longer than reference_time
+        if aligned_column.shape[0] > reference_time.shape[0]:
+            aligned_column = aligned_column[:reference_time.shape[0]]
+        else:
+            aligned_column = np.pad(aligned_column, (0, reference_time.shape[0] - aligned_column.shape[0]), mode='constant')
+        
+        aligned_data[column] = aligned_column
+        
+    # การสร้าง DataFrame ใหม่ที่ปรับแต่งแล้ว
+    dtw_data = pd.DataFrame(aligned_data)
+    output_file_name = f"dtw_{file_name}"
+    output_file_path = os.path.join(output_path, output_file_name)
+    dtw_data.to_csv(output_file_path, index=False)
+    print(f"Processed {file_name} and saved to {output_file_path}")
 
-# Split coordinates in all dataframes
-dfs = [split_coordinates(df) for df in dfs]
-
-# Perform DTW and save the aligned data
-aligned_dfs = []
-
-# Assuming the first dataframe as the reference for DTW
-reference = dfs[0]
-
-for df in dfs:
-    aligned_columns = {}
-    for column in df.columns:
-        ref_series = reference[column].values.flatten()  # Ensure 1-D and float
-        target_series = df[column].values.flatten()  # Ensure 1-D and float
-        alignment = dtw(ref_series, target_series, keep_internals=True)
-        aligned_target_series = np.array([target_series[j] for j in alignment.index2])
-        aligned_columns[column] = aligned_target_series
-    aligned_df = pd.DataFrame(aligned_columns)
-    aligned_dfs.append(aligned_df)
-
-# Save the aligned dataframes to the output directory
-for i, aligned_df in enumerate(aligned_dfs):
-    aligned_df.to_csv(os.path.join(output_path, f'spine_keyframe_{i}_angles_aligned.csv'), index=False)
-
-print("Alignment and saving completed.")
+# ประมวลผลไฟล์ CSV ทั้งหมดใน input path
+for file_name in os.listdir(input_path):
+    if file_name.endswith('.csv'):
+        process_dtw(file_name)
