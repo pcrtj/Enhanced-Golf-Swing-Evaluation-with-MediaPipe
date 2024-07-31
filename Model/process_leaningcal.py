@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import os
 
-input_path = './output/videos_keyframedetection/raw_data/hpe_raw_data/csv'
-output_path = './output/videos_keyframedetection/raw_data/hpe_raw_data/spine_raw_csv'
+input_path = './output/videos_keyframedetection/adjusted_data/hpe_adjust_data/smoothed_csv'
+output_path = './output/videos_keyframedetection/adjusted_data/hpe_adjust_data/spine_smoothed_csv'
 if not os.path.exists(output_path):
     os.makedirs(output_path)
 
