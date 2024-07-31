@@ -3,7 +3,7 @@ import mediapipe as mp
 import numpy as np
 import os
 import csv
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
