@@ -4,9 +4,9 @@ from moviepy.video.io.VideoFileClip import VideoFileClip
 
 csv_path = './golfdb/data/GolfDB.csv'
 
-input_videos_path = './output/videos_blackback'
+input_videos_path = './input/data/videos_160'
 
-output_videos_path = './output/videos_keyframedetection/blackback'
+output_videos_path = './output/videos_keyframedetection/raw_data'
 
 os.makedirs(output_videos_path, exist_ok=True)
 
@@ -24,7 +24,7 @@ def cut_video(video_name, start_frame, end_frame, fps, output_path):
 
 for index, row in df.iterrows():
     # video_name = f"{row['id']}.mp4"
-    video_name = f"cleaned_{row['id']}.mp4"
+    video_name = f"keyframe_{row['id']}.mp4"
     events = list(map(int, row['events'].strip('[]').split(',')))
     # Assuming the frame rate (fps) is 30 for all videos
     fps = 30
