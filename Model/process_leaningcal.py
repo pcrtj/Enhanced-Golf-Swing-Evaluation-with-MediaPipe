@@ -2,13 +2,14 @@ import pandas as pd
 import numpy as np
 import os
 
-input_path = './output/videos_keyframedetection/adjusted_data/hpe_adjust_data/smoothed_csv'
-output_path = './output/videos_keyframedetection/adjusted_data/hpe_adjust_data/spine_smoothed_csv'
+input_path = './output/videos_keyframedetection/adjusted_data/other/hpe_other/smoothed_csv'
+output_path = './output/videos_keyframedetection/adjusted_data/other/hpe_other/spine_smoothed_csv'
 if not os.path.exists(output_path):
     os.makedirs(output_path)
 
 total_files = len([f for f in os.listdir(input_path) if f.endswith(".csv")])
 file_counter = 0
+skipped_files = 0
 
 for filename in os.listdir(input_path):
     if filename.endswith(".csv"):
@@ -17,6 +18,12 @@ for filename in os.listdir(input_path):
         print(f"Processing file {file_counter} of {total_files}: {filename}")
 
         data = pd.read_csv(file_path)
+
+        # Check if the file is empty
+        if data.empty:
+            print(f"Skipping empty file: {filename}")
+            skipped_files += 1
+            continue
 
         data[['Left Shoulder X', 'Left Shoulder Y']] = data['x, y Left Shoulder'].str.split(',', expand=True).astype(float)
         data[['Right Shoulder X', 'Right Shoulder Y']] = data['x, y Right Shoulder'].str.split(',', expand=True).astype(float)
@@ -40,7 +47,6 @@ for filename in os.listdir(input_path):
                 leaning.append('Leading Side')
         data['Leaning'] = leaning
 
-
         data.drop(columns=['Left Shoulder X', 'Left Shoulder Y', 'Right Shoulder X', 'Right Shoulder Y',
                            'Left Hip X', 'Left Hip Y', 'Right Hip X', 'Right Hip Y', 'Spine Shoulder X',
                            'Spine Shoulder Y', 'Spine Hip X', 'Spine Hip Y'], inplace=True)
@@ -48,3 +54,5 @@ for filename in os.listdir(input_path):
         output_filename = f"spine_{filename}"
         output_file_path = os.path.join(output_path, output_filename)
         data.to_csv(output_file_path, index=False)
+
+print(f"Skipped {skipped_files} empty files.")

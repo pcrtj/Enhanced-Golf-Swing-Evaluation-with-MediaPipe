@@ -7,8 +7,8 @@ window_length = 35  # Choose an odd number for the window length
 polyorder = 3       # Polynomial order
 
 # Input and output directories
-input_dir = './output/videos_keyframedetection/adjusted_data/hpe_adjust_data/csv'
-output_dir = './output/videos_keyframedetection/adjusted_data/hpe_adjust_data/smoothed_csv'
+input_dir = './output/videos_keyframedetection/adjusted_data/other/hpe_other/csv'
+output_dir = './output/videos_keyframedetection/adjusted_data/other/hpe_other/smoothed_csv'
 
 # Ensure the output directory exists
 os.makedirs(output_dir, exist_ok=True)
