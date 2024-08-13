@@ -1,0 +1,45 @@
+.butaddmem {
+    width: 27%;
+    text-align: center;
+    background-color: #ffffff;
+    color: #63b946;
+    border-color: #63b946;
+    margin-right: 20px;
+    font-size:16px;
+    font-weight: bold;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+    transition: all 0.4s ease-out;
+  }
+  .butaddmem:hover {
+    background-color: #63b946;
+    color: #ffffff;
+    box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+  }
+  
+  .li:hover {
+    box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+  }
+
+  .managebox {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-radius: 5px;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 30px;
+    width: 65%;
+    height: 20%;
+    background-color: rgba(255, 255, 255, 0.479);
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 0px 30px;
+  }
+
+  .locate {
+    justify-content: center;
+  }

@@ -1,0 +1,206 @@
+.containerr {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    border-radius: 5px;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 30px;
+    left: 50%;
+  }
+
+  input[type="search"] {
+    background-color: #ffffffc9;
+    font-weight: bolder;
+    width: 30%;
+    padding: 10px 22px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    box-sizing: border-box;
+    margin-right: 20px;
+  }
+
+  .searchbar {
+    background-color:#faedcb;
+    box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+    border-radius: 5px;
+    padding-left: 20px;
+    font-size: 14px;
+    font-family: "Poppins";
+    
+  }
+
+  
+
+
+.butsearch {
+  background-color: #ffffff;
+  color: #e7c366;
+  border-color: #000000;
+  margin-right: 20px;
+  font-size:16px;
+  font-weight: bold;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+  transition: all 0.4s ease-out;
+}
+
+.butsearch:hover {
+  background-color: #e7c366;
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+}
+
+.butaddmem {
+  background-color: #ffffff;
+  color: #63b946;
+  border-color: #63b946;
+  margin-right: 20px;
+  font-size:16px;
+  font-weight: bold;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+  transition: all 0.4s ease-out;
+}
+.butaddmem:hover {
+  background-color: #63b946;
+  color: #ffffff;
+  box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+}
+
+.butemotion {
+  background-color: #ffffff;
+  color: #8ad2ff;
+  border-color: #8ad2ff;
+  margin-right: 20px;
+  font-size:16px;
+  font-weight: bold;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+  transition: all 0.4s ease-out;
+}
+.butemotion:hover {
+  background-color: #8ad2ff;
+  color: #ffffff;
+}
+
+.butq {
+  background-color: #ffffff;
+  color: #7F00FF;
+  border-color: #7F00FF;
+  margin-right: 20px;
+  font-size:16px;
+  font-weight: bold;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+  transition: all 0.4s ease-out;
+}
+.butq:hover {
+  background-color: #7F00FF;
+  color: #ffffff;
+  box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-right: 50px;
+  margin-bottom: 20px;
+
+}
+
+.list li {
+  font-size: 16px;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  width: 300px;
+  text-align: center;
+  height: 3rem;
+  transform: translateY(50%);
+  background-color: rgba(255, 255, 255, 0.479);
+}
+
+.list img {
+  width: 150px;
+  height: 7rem;
+  border-radius: 10%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.list button {
+  transform: translateY(48%);
+  height: 3rem;
+  font-size:16px;
+  font-weight: bold;
+  
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+  transition: all 0.4s ease-out;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.edit-button {
+  background-color: #ffffff;
+  padding-left: 29px;
+  padding-right: 29px;
+  color: #75A0E8;
+  border-color: #75A0E8;
+}
+.edit-button:hover {
+  color: #ffffff;
+  background-color: #75A0E8;
+}
+
+.delete-button {
+  background-color: #ffffff;
+  padding-left: 20px;
+  padding-right: 20px;
+  color: #f44336;
+  border-color: #f44336;
+}
+.delete-button:hover {
+  background-color: #da190b;
+}
+
+.list hr {
+  margin-right: 15px;
+  margin-left: 15px;
+}
+
+img{
+  background-color: #000000;
+
+}
+
+.box-student {
+  position: absolute;
+  width: 95%;
+  left: 2.75%;
+  padding: 30px 10px;
+  background-color:  rgba(255, 255, 255, 0.479);
+  border-radius: 20px;
+  box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+}

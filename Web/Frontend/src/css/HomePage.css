@@ -1,0 +1,39 @@
+.home-page {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .background-image {
+    background-image: url('../assets/images/black-white\ BG.jpg');
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+  }
+  
+  .scroll-down-section {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    margin-top: 50vh;
+    transition: margin-top 0.5s ease-in-out;
+  }
+  
+  .scroll-down-section.scrolled {
+    margin-top: 20px;
+  }
+
+  h1 {
+    color: #ff1010; /* หรือสีอื่นที่เหมาะสมกับพื้นหลังของคุณ */
+    z-index: 1;
+    position: relative;
+  }

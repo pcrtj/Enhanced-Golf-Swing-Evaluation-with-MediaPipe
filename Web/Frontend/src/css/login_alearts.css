@@ -1,0 +1,23 @@
+.login_alerts {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+    text-align: center;
+    z-index: 1000;
+  }
+  
+  .login_alerts button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .login_alerts button:hover {
+    background-color: #ff5722;
+  }

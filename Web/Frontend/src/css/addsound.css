@@ -1,0 +1,124 @@
+.top-emo {
+    color: #D0AB4A;
+    font-family: 'Poppins';
+    font-size: 45px;
+    font-weight: bolder;
+    text-align: center;
+    margin-top: 21px;
+    position: absolute;
+    top:28.3%;
+    left: 50%;
+    transform: translate(-50%, -37%);
+    z-index: 1;
+    letter-spacing: 5px;
+    
+}
+
+.box-addsound {
+    display: flex;
+    width: 28%;
+    background-color: #ffffff;
+    border-radius:15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    padding-top: 50px;
+    padding-bottom: 30px;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    transform: translate(-50%, -37%);
+    z-index: 0;
+}
+
+.emo {
+    font-family: 'Poppins';
+    font-size: 20px;
+    font-weight: bolder;
+    padding-right: 15px;
+    margin-bottom: 20px;
+}
+
+.text {
+    font-family: 'Poppins';
+    font-size: 20px;
+    font-weight: bolder;
+    padding-right: 15px;
+
+}
+
+.box-emo {
+    color: #000000;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+    font-size: 18px;
+    padding: 5px 10px;
+    transition: 0.5s ease all;
+    margin-bottom: 30px;
+}
+.box-emo:hover {
+    color: #ffff;
+    background-color: #0000009c;
+}
+
+.box-text {
+    width: 100%;
+    color: #000000;
+    background-color: #ffffffff;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
+.box-button {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.butsubmit {
+    background-color: #ffffff;
+    color: #63b946;
+    border-color: #63b946;
+    margin-right: 30px;
+    font-size:16px;
+    font-weight: bold;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+    transition: all 0.4s ease-out;
+  }
+  .butsubmit:hover {
+    background-color: #63b946;
+    color: #ffffff;
+    box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+  }
+
+  .butbackemo {
+    background-color: #ffffff;
+    color: #75A0E8;
+    border-color: #75A0E8;
+    border: 4px solid #75A0E8;
+    font-size:16px;
+    font-weight: bold;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+    transition: all 0.4s ease-out;
+  }
+
+  .butbackemo:hover {
+    background-color: #75A0E8;
+    color: #ffffff;
+    box-shadow: 0px 5px 10px 4px rgba(0, 0, 0, 0.14);
+  }
+
+
+
+
+  

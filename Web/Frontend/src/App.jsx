@@ -1,5 +1,5 @@
 import './App.css'
-import { HashRouter, Routes, Route } from "React-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./pages/Navbar";
 import Home from "./pages/Home";
 import Footer from "./pages/Footer";
@@ -12,16 +12,18 @@ function App() {
       <HashRouter>
         <Routes>
           {/* Specify routes without Navbar */}
-          <Route path="/login/*" element={<Login />} />
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/login/*" element={<Login />} />
 
           {/* Specify routes with Navbar */}
           <Route path="/*" element={
               <>
                 <Navbar />
                 <Routes>
+                  
                   <Route path="/home" element={<Home />} />
+                  
                 </Routes>
                 <Footer />
               </>

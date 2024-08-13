@@ -1,42 +1,100 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;1,200&family=Poppins:wght@300&display=swap');
+
+/* html {
+  zoom: 80%;
+} */
+
+body {
+  padding-bottom: 100px !important;
+  height: auto;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.footer {
+  position: fixed;     
+       text-align: center;    
+       bottom: 0px; 
+       width: 100%;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.footer p {
+  margin-bottom: 28px;
+  padding: 0;
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.footer-by {
+  font-size: .9em;
+  /* margin: 60px 0 50px 0; */
+  color: #7e8890;
 }
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+p {
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
 }
 
-.card {
-  padding: 2em;
+/* :root {
+  --bg-primary: #FCF7E8;
+  --bg-secondary: #FCF7E8;
+  --bg-terniary: #ffffff;
+  --text-primary: #ff0000;
+} */
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
 }
 
-.read-the-docs {
-  color: #888;
+h1,
+h2 {
+  margin: 45px;
+  font-weight: 600;
 }
+
+body {
+  background-color: var(--bg-primary);
+}
+
+a {
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+
+
+.signature {
+  justify-content:center;
+  align-items: center;
+  text-align:center
+  
+}
+
+.w100-dflex-align-center-justify-center {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  object-fit: cover;
+  margin-right: 10px;
+}
+.github-icon {
+  font-size: 1.5em;
+  transition: 0.3s ease-in-out;
+}
+.github-icon:hover {
+  scale: 1.1;
+}
+
+.endtext {
+  color: #ff0000;
+}
+
+
