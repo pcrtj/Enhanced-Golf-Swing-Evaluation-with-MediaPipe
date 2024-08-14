@@ -4,7 +4,6 @@ import Navbar from "./pages/Navbar";
 import Home from "./pages/Home";
 import Footer from "./pages/Footer";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
 
 function App() {
   return (
@@ -13,8 +12,7 @@ function App() {
         <Routes>
           {/* Specify routes without Navbar */}
           <Route path="/" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login/*" element={<Login />} />
+          <Route path="/login" element={<Login />} />
 
           {/* Specify routes with Navbar */}
           <Route path="/*" element={

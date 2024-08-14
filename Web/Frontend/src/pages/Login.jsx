@@ -2,6 +2,7 @@ import Axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/login.css";
+import Swal from 'sweetalert2'
 
 export default function Sign_up() {
   const [username, setusername] = useState("");
@@ -11,8 +12,8 @@ export default function Sign_up() {
 
   document.body.style.overflow = "hidden";
 
-  const requst_login = () => [
-    Axios.post("http://localhost/login", {
+  const requst_login = () => {
+    Axios.post("http://localhost:3000/login", {
       username: username,
       password: password,
     }).then((Response) => {
@@ -20,34 +21,64 @@ export default function Sign_up() {
       if (Response.data == "Success") {
         sessionStorage.setItem("username", username)
         console.log(sessionStorage.getItem("username"))
+        Swal.fire({
+          icon: "success",
+          title: "Success...",
+          text: "Login successfully!",
+          timer: 1200,
+          showConfirmButton: false
+        });
         navigate('/home');
       } else {
-        sessionStorage.setItem("usernamelogin", "null");
-        sessionStorage.setItem("login_status", "false");
-        sessionStorage.setItem("role", "null");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "The username or password is incorrect.",
+          timer: 1200,
+          showConfirmButton: false
+        });
       }
-    }),
-  ];
+    });
+  };
 
   useEffect(() => {
     console.clear();
   }, []);
 
-  const handleSignUp = (e) => {
+  const request_signup = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
+    if (password !== confirmPassword) {               //Work!!
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Password doesn't match!",
+        timer: 1200,
+        showConfirmButton: false
+      });                                               
     } else {
       // Call API to create new user
-      Axios.post("http://localhost/signup", {
+      Axios.post("http://localhost:3000/signup", {     //Work!!
         username: username,
         password: password,
       }).then((Response) => {
         console.log(Response.data)
-        if (Response.data == "Success") {
-          alert("User created successfully");
+        if (Response.data == "Success") {         
+          Swal.fire({
+            icon: "success",
+            title: "Success...",
+            text: "User created successfully!",
+            timer: 1200,
+            showConfirmButton: false
+          });
+          // navigate('/login');
         } else {
-          alert("Error creating user");
+          Swal.fire({
+            icon: "error",
+            title: "Opps...",
+            text: "User created unsuccessfully!",
+            timer: 1200,
+            showConfirmButton: false
+          });
         }
       });
     }
@@ -57,19 +88,19 @@ export default function Sign_up() {
     <div className="main">
       <input type="checkbox" id="chk" aria-hidden="true" />
       <div className="signup">
-        <form onSubmit={handleSignUp}>
+        <form onSubmit={request_signup}>
           <label htmlFor="chk" aria-hidden="true">Sign up</label>
-          <input type="text" name="username" placeholder="Username" required onChange={(e) => setusername(e.target.value)} />
-          <input type="password" name="pswd" placeholder="Password" required onChange={(e) => setpassword(e.target.value)} />
-          <input type="password" name="confirmPswd" placeholder="Confirm Password" required onChange={(e) => setConfirmPassword(e.target.value)} />
-          <button>Sign up</button>
+          <input type="text" placeholder="Username" required onChange={(e) => setusername(e.target.value)} />
+          <input type="password" placeholder="Password" required onChange={(e) => setpassword(e.target.value)} />
+          <input type="password" placeholder="Confirm Password" required onChange={(e) => setConfirmPassword(e.target.value)} />
+          <button type="submit" >Sign up</button>
         </form>
       </div>
       <div className="login">
         <form>
           <label htmlFor="chk" aria-hidden="true">Login</label>
-          <input type="text" name="username" placeholder="Username" required onChange={(e) => setusername(e.target.value)} />
-          <input type="password" name="pswd" placeholder="Password" required onChange={(e) => setpassword(e.target.value)} />
+          <input type="text" placeholder="Username" required onChange={(e) => setusername(e.target.value)} />
+          <input type="password" placeholder="Password" required onChange={(e) => setpassword(e.target.value)} />
           <button onClick={requst_login}>Login</button>
         </form>
       </div>
