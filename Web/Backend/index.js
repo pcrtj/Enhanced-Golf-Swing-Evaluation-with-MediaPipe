@@ -4,7 +4,6 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const Swal = require('sweetalert2')
 const app = express();
 
 app.use(cors());
@@ -45,23 +44,23 @@ app.post('/login', (req, res) => {
             if (results.length > 0) {
                 console.log(results);
                 if (results[0].U_Password === password) {
-                    
-                    res.send("Success");
+                    res.send('Success');
                 } else {
-                    
-                    res.send("Fail");
+                    res.send('Fail');
                 }
             } else {
                 console.log('No user found with the provided username.');
-                res.status(404).send('User not found');
+                res.status(202).send('User not found');
             }
         }
     });
 });
 
 
+
 app.post('/signup', (req, res) => {
     const { username, password } = req.body;
+    
     db.query('SELECT * FROM `user` WHERE U_Username=?', [username], (error, results) => {
         if (error) {
             console.error('Error executing SQL query:', error);
@@ -69,7 +68,7 @@ app.post('/signup', (req, res) => {
         }
 
         if (results.length > 0) {
-            return res.status(409).send('Username already exists');
+            return res.status(200).send('user already exist');
         } else {
             // เพิ่มผู้ใช้ใหม่ในตาราง user
             db.query(
@@ -80,13 +79,13 @@ app.post('/signup', (req, res) => {
                         console.error('Error executing SQL query:', err);
                         return res.status(500).send('Internal Server Error');
                     }
-
-                    return res.status(201).send('User registered successfully');
+                    return res.status(201).send('Success');
                 }
             );
         }
     });
 });
+
 
 
 
