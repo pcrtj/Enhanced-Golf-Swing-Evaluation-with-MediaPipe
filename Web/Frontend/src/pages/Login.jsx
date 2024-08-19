@@ -14,6 +14,17 @@ export default function Sign_up() {
 
   const request_login = () => {
 
+    if (!username || !password ) {
+        Swal.fire({
+            icon: "warning",
+            title: "Warning...",
+            text: "Please fill in all fields.",
+            timer: 1200,
+            showConfirmButton: false
+        });
+        return;
+    }
+
     Axios.post("http://localhost:3000/login", {
         username: username,
         password: password,
@@ -27,7 +38,9 @@ export default function Sign_up() {
                 timer: 1200,
                 showConfirmButton: false
             }).then(() => {
-                navigate('/home');
+                sessionStorage.setItem("username",username)
+                console.log(sessionStorage.getItem("username"))
+                navigate('/');
             });
         } else {
             Swal.fire({
@@ -36,6 +49,10 @@ export default function Sign_up() {
                 text: "The username or password is incorrect.",
                 timer: 1200,
                 showConfirmButton: false
+            }).then(() => {
+                sessionStorage.setItem("usernamelogin","null");
+                sessionStorage.setItem("login_status","false");
+                sessionStorage.setItem("role","null");
             });
         }
     }).catch((error) => {
@@ -59,7 +76,6 @@ export default function Sign_up() {
   const request_signup = (e) => {
     e.preventDefault();
 
-    // ตรวจสอบว่าทุกฟิลด์ถูกกรอกครบถ้วน
     if (!username || !password || !confirmPassword) {
         Swal.fire({
             icon: "warning",
@@ -71,7 +87,6 @@ export default function Sign_up() {
         return;
     }
 
-    // ตรวจสอบว่ารหัสผ่านและการยืนยันรหัสผ่านตรงกัน
     if (password !== confirmPassword) {
         Swal.fire({
             icon: "error",
@@ -83,7 +98,6 @@ export default function Sign_up() {
         return;
     }
 
-    // ถ้าข้อมูลถูกต้องทั้งหมด ให้ส่งคำขอไปที่ Backend
     Axios.post("http://localhost:3000/signup", {
         username: username,
         password: password,
@@ -129,25 +143,28 @@ export default function Sign_up() {
 
 
   return (
-    <div className="main">
-      <input type="checkbox" id="chk" aria-hidden="true" />
-      <div className="signup">
-        <form>
-          <label htmlFor="chk" aria-hidden="true">Sign up</label>
-          <input type="text" placeholder="Username" required onChange={(e) => setusername(e.target.value)} />
-          <input type="password" placeholder="Password" required onChange={(e) => setpassword(e.target.value)} />
-          <input type="password" placeholder="Confirm Password" required onChange={(e) => setConfirmPassword(e.target.value)} />
-          <button onClick={request_signup} >Sign up</button>
-        </form>
-      </div>
-      <div className="login">
-        <form>
-          <label htmlFor="chk" aria-hidden="true">Login</label>
-          <input type="text" placeholder="Username" required onChange={(e) => setusername(e.target.value)} />
-          <input type="password" placeholder="Password" required onChange={(e) => setpassword(e.target.value)} />
-          <button onClick={request_login}>Login</button>
-        </form>
-      </div>
-    </div>
+    <body className="login-body">
+        <div className="main">
+            <input type="checkbox" id="chk" aria-hidden="true" />
+                <div className="signup">
+                    <form>
+                    <label htmlFor="chk" aria-hidden="true">Sign up</label>
+                    <input type="text" placeholder="Username"  onChange={(e) => setusername(e.target.value)} />
+                    <input type="password" placeholder="Password"  onChange={(e) => setpassword(e.target.value)} />
+                    <input type="password" placeholder="Confirm Password"  onChange={(e) => setConfirmPassword(e.target.value)} />
+                    <button onClick={request_signup} >Sign up</button>
+                    </form>
+                </div>
+                <div className="login">
+                    <form>
+                    <label htmlFor="chk" aria-hidden="true">Login</label>
+                    <input type="text" placeholder="Username"  onChange={(e) => setusername(e.target.value)} />
+                    <input type="password" placeholder="Password"  onChange={(e) => setpassword(e.target.value)} />
+                    <button onClick={request_login}>Login</button>
+                    </form>
+                </div>
+        
+        </div>
+    </body>
   );
 }

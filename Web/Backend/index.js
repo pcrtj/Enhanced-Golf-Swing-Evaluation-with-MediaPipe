@@ -44,9 +44,9 @@ app.post('/login', (req, res) => {
             if (results.length > 0) {
                 console.log(results);
                 if (results[0].U_Password === password) {
-                    res.send('Success');
+                    return res.status(201).send('Success');
                 } else {
-                    res.send('Fail');
+                    return res.status(200).send('Fail');
                 }
             } else {
                 console.log('No user found with the provided username.');
