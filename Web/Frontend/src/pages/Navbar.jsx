@@ -4,6 +4,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { Link} from "react-router-dom";
 import '../css/Navbar.css'
 
+
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [size, setSize] = useState({
@@ -40,7 +41,7 @@ function Navbar() {
     <header className="header">
       <div className="header__content">
         <Link to="/home" className="header__content__logo">
-          Welcome Back
+          GOLF <span></span>ANALYSIS
         </Link>
         <nav className={`${"header__content__nav"} ${menuOpen && size.width < 768 ? `${"isMenu"}` : ""} }`}>
           <ul>
@@ -60,6 +61,7 @@ function Navbar() {
             <Link to="/login">
               <button className="btn btn__login" onClick={logout}>Logout</button>
             </Link>
+            
           </ul>
         </nav>
         <div className="header__content__toggle">

@@ -40,7 +40,7 @@ export default function Sign_up() {
             }).then(() => {
                 sessionStorage.setItem("username",username)
                 console.log(sessionStorage.getItem("username"))
-                navigate('/');
+                navigate('/home');
             });
         } else {
             Swal.fire({
