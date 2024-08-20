@@ -1,3 +1,4 @@
+
 .button {
   margin: 0;
   height: auto;
@@ -52,6 +53,8 @@
   background: var(--day-color);
 }
 .header__content {
+  flex-direction: row;
+  align-items: center;
   font-weight: bold;
   overflow: hidden;
   color: #000000;
@@ -65,7 +68,22 @@
   font-size: 20px;
 }
 
+.header__logo {
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.golflogo {
+  position: absolute;
+  top: 17%;
+}
+
 .header__content__logo {
+  position: absolute;
+  top: 23%;
+  left: 4%;
+  text-transform: uppercase;
+  margin-left: 15px;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 2rem;
   font-weight: bold;
@@ -75,8 +93,9 @@
   transition: 0.3s ease all;
 }
 .header__content__logo:hover {
-  color: #1A3636;
-  text-shadow: 2px 2px 3px #353535;
+  color: #37FF8B;
+  text-shadow: 0px 0px 50px #37FF8B;
+  
 }
 
 .header__content__nav {
@@ -310,7 +329,8 @@ button.loginlogout:active {
 
 @media (min-width: 48em) {
   .header {
-    padding: 0 4%;
+    padding: 0 2%;
+    
   }
 
   .header__content__nav {
