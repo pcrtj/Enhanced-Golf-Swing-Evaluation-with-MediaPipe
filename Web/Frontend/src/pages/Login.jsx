@@ -152,7 +152,7 @@ export default function Sign_up() {
                     <input type="text" placeholder="Username"  onChange={(e) => setusername(e.target.value)} />
                     <input type="password" placeholder="Password"  onChange={(e) => setpassword(e.target.value)} />
                     <input type="password" placeholder="Confirm Password"  onChange={(e) => setConfirmPassword(e.target.value)} />
-                    <button onClick={request_signup} >Sign up</button>
+                    <button className="loginpage" onClick={request_signup} >Sign up</button>
                     </form>
                 </div>
                 <div className="login">
@@ -160,7 +160,7 @@ export default function Sign_up() {
                     <label htmlFor="chk" aria-hidden="true">Login</label>
                     <input type="text" placeholder="Username"  onChange={(e) => setusername(e.target.value)} />
                     <input type="password" placeholder="Password"  onChange={(e) => setpassword(e.target.value)} />
-                    <button onClick={request_login}>Login</button>
+                    <button className="loginpage" onClick={request_login}>Login</button>
                     </form>
                 </div>
         
