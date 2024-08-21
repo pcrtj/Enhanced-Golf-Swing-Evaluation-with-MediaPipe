@@ -1,37 +1,53 @@
-import './App.css'
+import './App.css';
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./pages/Navbar";
-import Home from "./pages/Home";
-// import Footer from "./pages/Footer";
+import Navbarguest from "./pages/Navbarguest";
+import Homeuser from "./pages/Homeuser";
+import Homeguest from "./pages/Homeguest";
 import Login from "./pages/Login";
+import History from "./pages/History"
 
 function App() {
   return (
     <div className='maindisplay'>
       <HashRouter>
         <Routes>
-          {/* Specify routes without Navbar */}
-          {/* <Route path="/" element={<Login />} /> */}
+          {/* เส้นทางเข้าสู่ระบบ */}
           <Route path="/login" element={<Login />} />
-
-          {/* Specify routes with Navbar */}
+          
+          {/* เส้นทางสำหรับ guest */}
           <Route 
-            path="/*"
+            path="/" 
+            element={
+              <>
+                <Navbarguest />
+                <Homeguest />
+              </>
+            } 
+          />
+          
+          {/* เส้นทางสำหรับ user */}
+          <Route 
+            path="/homeuser" 
             element={
               <>
                 <Navbar />
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/home" element={<Home />} />
-                </Routes>
-                {/* <Footer /> */}
+                <Homeuser />
+              </>
+            } 
+          />
+
+          <Route
+            path="/history"
+            element={
+              <>
+                <Navbar />
+                <History />
               </>
             }
-          />
+            />
         </Routes>
-
       </HashRouter>
-
     </div>
   );
 }

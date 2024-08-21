@@ -40,7 +40,7 @@ export default function Sign_up() {
             }).then(() => {
                 sessionStorage.setItem("username",username)
                 console.log(sessionStorage.getItem("username"))
-                navigate('/home');
+                navigate('/homeuser');
             });
         } else {
             Swal.fire({
@@ -111,7 +111,6 @@ export default function Sign_up() {
                 timer: 1200,
                 showConfirmButton: false
             });
-            // navigate('/login');
         } else if (Response.data == "user already exist") {
             Swal.fire({
                 icon: "warning",

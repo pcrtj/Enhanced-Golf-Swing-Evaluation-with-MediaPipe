@@ -1,13 +1,13 @@
 import React from "react";
 import "../css/HomePage.css";
 
-function Home() {
+function Homeguest() {
   return (
     <body className="home-page">
-      <div>Home</div>
+      <div>Home Guest</div>
     </body>
     
   );
 }
 
-export default Home
+export default Homeguest
