@@ -32,12 +32,6 @@ p {
   margin-inline-end: 0px;
 }
 
-/* :root {
-  --bg-primary: #FCF7E8;
-  --bg-secondary: #FCF7E8;
-  --bg-terniary: #ffffff;
-  --text-primary: #ff0000;
-} */
 
 * {
   box-sizing: border-box;
@@ -48,7 +42,10 @@ p {
 
 h1,
 h2 {
-  margin: 45px;
+  margin-top: 45px;
+  margin-left: 45px;
+  margin-right: 45px;
+  margin-bottom: 25px;
   font-weight: 600;
 }
 

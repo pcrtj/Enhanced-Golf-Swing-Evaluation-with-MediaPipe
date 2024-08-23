@@ -8,7 +8,7 @@
   cursor: pointer;
 }
 
-/* button styling */
+
 .button {
   --border-right: 6px;
   --text-stroke-color: rgba(255,255,255,0.6);
@@ -23,7 +23,7 @@
   color: transparent;
   -webkit-text-stroke: 1px var(--text-stroke-color);
 }
-/* this is the text, when you hover on button */
+
 .hover-text {
   position: absolute;
   box-sizing: border-box;
@@ -95,7 +95,7 @@
 .header__content__logo:hover {
   color: #37FF8B;
   text-shadow: 0px 0px 50px #37FF8B;
-  
+  font-family: Arial, Helvetica, sans-serif;  
 }
 
 .header__content__nav {
@@ -183,7 +183,7 @@ button.loginlogout {
 }
 
 button.loginlogout:hover {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;  
   font-size: 12px;
   font-weight: bold;
   background-color: #23c483;
