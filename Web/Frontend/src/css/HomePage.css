@@ -63,7 +63,7 @@ body.home-page{
     align-items: center;
     justify-content: space-between;
     padding: 50px;
-    min-height: 80vh;
+    min-height: 91vh;
     background: linear-gradient(to bottom, rgba(103, 125, 106, 0.8), rgba(64, 83, 76, 0.8), rgba(26, 54, 54, 0.8));
   }
   
@@ -97,25 +97,43 @@ body.home-page{
   }
   
   .image-placeholder {
-    width: 40%;
+    width: 55%;
     height: 400px;
     display: flex;
-    margin-right: 20px;
+    margin-right: 30px;
     justify-content: center;
     align-items: center;
     background-color: #fafafa;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
   }
   
   .h-image {
+    border-radius: 10px;
     margin: 30px;
-    /* margin-right: 20px; */
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
   
+  .content-image-placeholder {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    margin-right: 30px;
+    justify-content: center;
+    align-items: center;
+    background-color: #fafafa;
+    border-radius: 10px;
+    box-shadow: rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+  }
+
+  .content-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   p.content {
     font-family: "Montserrat", sans-serif;
     color: #fff;
@@ -182,7 +200,6 @@ body.home-page{
 
   .section2 {
     background: linear-gradient(to top, rgba(103, 125, 106, 0.8), rgba(64, 83, 76, 0.8), rgba(26, 54, 54, 0.8));
-    padding: 50px 20px;
     text-align: center;
   }
   
@@ -194,6 +211,12 @@ body.home-page{
 
   .section4 {
     background: linear-gradient(to top, rgba(103, 125, 106, 0.8), rgba(64, 83, 76, 0.8), rgba(26, 54, 54, 0.8));
+    padding: 50px 20px;
+    text-align: center;
+  }
+
+  .section5 {
+    background: linear-gradient(to bottom, rgba(103, 125, 106, 0.8), rgba(64, 83, 76, 0.8), rgba(26, 54, 54, 0.8));
     padding: 50px 20px;
     text-align: center;
   }
@@ -217,3 +240,5 @@ body.home-page{
     max-width: 800px;
     margin: 0 auto;
   }
+
+  
