@@ -159,7 +159,7 @@ body.home-page{
     animation-timeline: view(60% 20%);
     background: linear-gradient(
     to right,
-    rgba(55, 255, 139, 0.8) 50%,
+    rgba(55, 255, 139, 0.6) 50%,
     rgba(55, 255, 139, 0) 50%
   );
     background-position: 100%;
@@ -214,13 +214,13 @@ body.home-page{
   }
 
   .section4 {
-    background: linear-gradient(to top, rgba(103, 125, 106, 0.8), rgba(64, 83, 76, 0.8), rgba(26, 54, 54, 0.8));
+    background: linear-gradient(to bottom, rgba(103, 125, 106, 0.8), rgba(103, 125, 106, 0.8), rgba(64, 83, 76, 0.8));
     padding: 50px 20px;
     text-align: center;
   }
 
   .section5 {
-    background: linear-gradient(to bottom, rgba(103, 125, 106, 0.8), rgba(64, 83, 76, 0.8), rgba(26, 54, 54, 0.8));
+    background: linear-gradient(to bottom, rgba(64, 83, 76, 0.8), rgba(64, 83, 76, 0.8), rgba(26, 54, 54, 0.8));
     padding: 50px 20px;
     text-align: center;
   }
@@ -244,5 +244,64 @@ body.home-page{
     max-width: 800px;
     margin: 0 auto;
   }
+  
+  
+  .introduction {
+    background-color: rgba(103, 125, 106, 0.8);
+    text-align: center;
+    padding: 20px;
+    padding-top: 50px;
+    padding-bottom: 110px;
+    font-family: Arial, sans-serif;
+}
 
+.introduction h2 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.introduction p {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 50px;
+    
+}
+
+p.subtitle {
+  margin-top: -10px;
+}
+
+.introduction-content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0px;
+    justify-items: center;
+}
+
+.intro-point {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: #f5f5f5;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 6px 10px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.intro-point strong {
+    font-weight: bold;
+}
+
+p.content-intro {
+  color: #000;
+}
+
+mark.introtext {
+  font-weight: 600;
+}
   

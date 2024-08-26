@@ -30,11 +30,25 @@ const HomePage = () => {
       </div>
     </section>
 
-    <section className="section3">
-    <h2 className="section-title">Introduction</h2>
-      <p className="section-text">
-        Nature is a vast and diverse realm, encompassing a wide range of ecosystems, landscapes, and living organisms. This project aims to explore the beauty and complexity of the natural world, highlighting its intricate balance and the importance of preserving its delicate equilibrium.
-      </p>
+    <section id="section3">
+      <div className="introduction">
+          <h2 className='section-title'>Introduction</h2>
+          <p className='subtitle'>A brief overview of the topic.</p>
+          <div className="introduction-content">
+              <div className="intro-point">
+                  <p className='content-intro'>• Golf is a sport that requires <br></br><mark className='introtext'>every part of the body</mark> to work together precisely and with <br></br><mark className='introtext'>perfect coordination</mark>.</p>
+              </div>
+              <div className="intro-point">
+                  <p className='content-intro'>• Develop a model that is capable of <mark className='introtext'>accurately and efficiently</mark> estimating golf swing posture.</p>
+              </div>
+              <div className="intro-point">
+                  <p className='content-intro'>• Practicing the golf swing alone can be challenging without <br></br><mark className='introtext'>understanding correct posture</mark> <br></br>or <br></br><mark className='introtext'>expert guidance.</mark></p>
+              </div>
+              <div className="intro-point">
+                  <p className='content-intro'>• By reducing the need to rely on trainers or experts who may have <mark className='introtext'>time and cost constraints</mark>.</p>
+              </div>
+          </div>
+      </div>
     </section>
 
     <section className="section4">
