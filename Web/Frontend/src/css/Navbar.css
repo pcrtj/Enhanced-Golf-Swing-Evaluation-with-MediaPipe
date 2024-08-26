@@ -48,6 +48,9 @@
   height: 90px;
   padding: 0 1rem;
   transition: 0.3s ease all;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 } 
  .header--day-color {
   background: var(--day-color);
