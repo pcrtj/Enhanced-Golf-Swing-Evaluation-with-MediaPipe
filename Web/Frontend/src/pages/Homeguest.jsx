@@ -1,8 +1,7 @@
-import React from 'react';
 import '../css/HomePage.css';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
-
+import LenisScroll from './LeninScroll';
 
 
 const HomeGuest = () => {
@@ -22,6 +21,7 @@ const HomeGuest = () => {
 
   return (
     <div>
+      <LenisScroll />
       <div className="homepage">
         <div className="content">
           <h1 className='headerhome'>Enhanced Golf Swing Evaluation <mark>with MediaPipe</mark></h1>
