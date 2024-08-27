@@ -9,7 +9,7 @@ body.login-body {
 	align-items: center;
 	min-height: 100vh;
 	font-family: 'Poppins', sans-serif;
-	background: linear-gradient(to top, #1A3636, #40534C, #677D6A);
+	background: linear-gradient(to bottom, #1A3636, #40534C, #677D6A);
 }
 .main{
 	width: 350px;

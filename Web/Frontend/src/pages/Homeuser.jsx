@@ -26,7 +26,7 @@ const HomePage = () => {
     
     <section className="section2">
       <div className="content-image-placeholder">
-        <img className="content-image" src="/images/Landscape.jpg" alt="content-image"></img>
+        <img className="content-image1" src="/images/Landscape.jpg" alt="content-image"></img>
       </div>
     </section>
 
@@ -52,61 +52,66 @@ const HomePage = () => {
     </section>
 
     <section className="section4">
-  <div className="objective">
-    <h2 className="section-title-objective">Objective</h2>
-    <p className='subtitle-objective'>Describe the main goal of the project.</p>
+      <div className="content-image-placeholder">
+        <img className="content-image2" src="/images/couplebg.jpg" alt="content-image"></img>
+      </div>
+    </section>
 
-    <section className="min-h-screen bg-gray-900 text-center py-20 px-8 xl:px-0 flex flex-col justify-center">
-      <div className="grid-offer text-left grid sm:grid-cols-4 md:grid-cols-2 gap-5 max-w-5xl mx-auto">
-        <div className="card bg-gray-800 p-10 relative">
-          <div className="circle">
+    <section className="section5">
+      <div className="objective">
+        <h2 className="section-title-objective">Objective</h2>
+        <p className='subtitle-objective'>Describe the main goal of the project.</p>
+        <div className="introduction-content">
+          <div className="intro-point">
+            <p className='content-intro'>
+              • To create a model that can evaluate golf swing posture accurately and efficiently using <mark className='introtext'>MediaPipe</mark> technology.
+            </p>
           </div>
-          <div className="relative lg:pr-52">
-            <h2 className="capitalize text-white mb-4 text-2xl xl:text-3xl">uI/uX <br /> creative design</h2>
-            <p className="text-gray-400">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames.</p>
+          <div className="intro-point">
+            <p className='content-intro'>
+              • To create a model that can <br></br><mark className='introtext'>score golf swings</mark>, <br></br>which will help golfers use as a reference for comparison.
+            </p>
           </div>
-          <div className="icon"></div>
-        </div>
-        <div className="card bg-gray-800 p-10 relative">
-          <div className="circle">
+          <div className="intro-point">
+            <p className='content-intro'>
+              • To help golfers of all levels practice swing posture more easily, with <mark className='introtext'>correct posture</mark>.
+            </p>
           </div>
-          <div className="relative lg:pl-48">
-            <h2 className="capitalize text-white mb-4 text-2xl xl:text-3xl">visual <br /> graphic design</h2>
-            <p className="text-gray-400">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames.</p>
-          </div>
-        </div>
-        <div className="card bg-gray-800 p-10 relative">
-          <div className="circle">
-          </div>
-          <div className="relative lg:pr-44">
-            <h2 className="capitalize text-white mb-4 text-2xl xl:text-3xl">strategy & <br />digital marketing</h2>
-            <p className="text-gray-400">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames.</p>
-          </div>
-        </div>
-        <div className="card bg-gray-800 p-10 relative">
-          <div className="circle">
-          </div>
-          <div className="relative lg:pl-48">
-            <h2 className="capitalize text-white mb-4 text-2xl xl:text-3xl">effective<br /> business growth</h2>
-            <p className="text-gray-400">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames.</p>
+          <div className="intro-point">
+            <p className='content-intro'>
+              • To collect data and develop techniques for <mark className='introtext'>further research and development in the future</mark>.
+            </p>
           </div>
         </div>
       </div>
-
     </section>
-  </div>
-</section>
 
+    <section className="section6">
+        <div className="content-image-placeholder">
+          <img className="content-image3" src="/images/golfgolfgolfwth.jpg" alt="content-image"></img>
+        </div>
+      </section>
 
-    <section className="section5">
-      <h2 className="section-title">bra bra bra!!!</h2>
-      <p className="section-text">
-        The primary objective of this project is to capture the breathtaking beauty of nature through artistic expressions and scientific understanding, promoting awareness and conservation efforts to sustain the environment for future generations.
-      </p>
+    <section className="section7">
+      <h2 className="section-title">Thank you</h2>
+        <p className="endtext">
+          This project is a cooperation between 
+          <br>
+          </br>
+          <p className='endtextncu'>National Central University, Taiwan
+          </p> 
+          <br>
+          </br>and 
+          <br>
+          </br>
+          <p className='endtextkmutnb'>King Mongkut&#39;s University of Technology North Bangkok, Thailand
+          </p>.
+        </p>
+        {/* <img className="icon" src="/images/taiwan.png" alt="taiwan-icon" />
+        <img className="icon" src="/images/thailand.png" alt="taiwan-icon" /> */}
     </section>
     </div>
-    
-    
+
   );
 };
 
