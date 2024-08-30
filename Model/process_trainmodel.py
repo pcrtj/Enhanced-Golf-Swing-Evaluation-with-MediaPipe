@@ -3,8 +3,10 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import GradientBoostingRegressor, AdaBoostRegressor, ExtraTreesRegressor
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import HuberRegressor
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import r2_score
@@ -53,7 +55,11 @@ models = {
     "LinearRegression": LinearRegression(),
     "DecisionTreeRegressor": DecisionTreeRegressor(),
     "RandomForestRegressor": RandomForestRegressor(n_estimators=100, random_state=42),
-    "KNeighborsRegressor": KNeighborsRegressor(n_neighbors=5)
+    "KNeighborsRegressor": KNeighborsRegressor(n_neighbors=5),
+    "GradientBoostingRegressor": GradientBoostingRegressor(n_estimators=100, random_state=42),
+    "AdaBoostRegressor": AdaBoostRegressor(n_estimators=100, random_state=42),
+    "ExtraTreesRegressor": ExtraTreesRegressor(n_estimators=100, random_state=42),
+    "HuberRegressor": HuberRegressor()
 }
 
 # ฝึกและประเมินโมเดล

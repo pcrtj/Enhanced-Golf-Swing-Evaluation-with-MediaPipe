@@ -1,6 +1,8 @@
 import '../css/HomePage.css';
 import { useEffect } from 'react';
 import LenisScroll from './LeninScroll';
+import { Link} from "react-router-dom";
+import BoxReveal from "../components/magicui/box-reveal";
 
 
 const HomePage = () => {
@@ -13,11 +15,19 @@ const HomePage = () => {
       <LenisScroll />
       <div className="homepage">
         <div className="content">
-          <h1 className='headerhome'>Enhanced Golf Swing Evaluation <mark>with MediaPipe</mark></h1>
-            <p className='content'>
-              Wireless Ad-Hoc and Sensor Networks Laboratory, <br></br>Department of Computer Science and Information Engineering, <br></br>National Central University, Taiwan
-            </p>
-            <button className="getstarted">Get Started</button>
+          <BoxReveal boxColor={"rgba(64, 83, 76, 0.8)"} duration={0.5}>
+            <h1 className='headerhome'>
+                Enhanced Golf Swing Evaluation <mark>with MediaPipe</mark>
+            </h1>
+          </BoxReveal>
+            <BoxReveal boxColor={"rgba(64, 83, 76, 0.8)"} duration={0.5}>
+              <p className='content'>
+                Wireless Ad-Hoc and Sensor Networks Laboratory, <br></br>Department of Computer Science and Information Engineering, <br></br>National Central University, Taiwan
+              </p>
+            </BoxReveal>
+            <Link to="/videoupload">
+              <button className="getstarted">Get Start</button>
+            </Link>
         </div>
         <div className="image-placeholder">
           <img className="h-image" src="/images/landscapeBG.jpg" alt="Header-image"></img>

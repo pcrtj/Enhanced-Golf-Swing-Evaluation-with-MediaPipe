@@ -1,0 +1,313 @@
+h1.headerhome {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    text-transform: uppercase;
+    color: #fff;
+    z-index: 1;
+    position: relative;
+    line-height: 1.3;
+  }
+
+  p.content  {
+    text-align: center;
+    margin-top: -15px;
+    margin-bottom: 30px;
+  }
+
+  .subtextgreen {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    background:rgba(55, 255, 139, 0.6);
+    color: #000;
+    max-width: 1000px;
+    display: inline;
+  }
+
+  .subtextred {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    background:rgba(255, 55, 55, 0.6);
+    color: #000;
+    max-width: 1000px;
+    display: inline;
+  }
+
+.click {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    color: #ffffff70;
+}
+
+.golf-info-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    margin-bottom: 25px;
+}
+  
+  .golf-sequences {
+    flex: 1;
+  }
+  
+  .golf-image {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .golf-image img {
+    border-radius: 10px;
+    max-width: 100%;
+    height: auto;
+    margin-right: -50px;
+    transition: all 0.3s ease 0s;
+  }
+
+  .golf-image img:hover {
+    scale: 1.02;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.5);
+  }
+
+.golfswingtext {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    color: #fff;
+}
+
+.sequence-note {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.infotextgreen {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    background:rgba(55, 255, 139, 0.6);
+    color: #000;
+    max-width: 1000px;
+    display: inline;
+    transition: all 0.3s ease 0s;
+    cursor: default;
+}
+
+.infotextgreen:hover {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    background:rgba(255, 255, 255);
+    color: rgba(55, 255, 139);
+    max-width: 1000px;
+    display: inline;
+}
+
+
+.page-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    min-height: 91vh;
+    overflow: hidden;
+    background: linear-gradient(to bottom, rgba(103, 125, 106, 0.8), rgba(64, 83, 76, 0.8), rgba(26, 54, 54, 0.8)),
+              url('/images/landscapeBG.jpg') no-repeat center center / cover;
+    background-size: 100% 100vh;
+    background-attachment: fixed;
+}
+
+.upload-container {
+    margin-top:-100px;
+    text-align: center;
+    color: white;
+}
+
+.upload-input {
+    width: 100%;
+    max-width: 600px;
+    height: 350px;    
+    padding: 10px;
+    margin-left: 45px;
+    margin-right: 45px;
+    border-radius: 15px;
+    border: 2px dashed rgba(26, 54, 54, 0.8);
+    background-color: rgba(64, 83, 76, 0.8);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-input input[type="file"] {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    color: #fff;
+    object-fit: fill;
+    margin-bottom: -20px;
+}
+
+.button-container {
+    margin-left: 45px;
+    margin-right: 45px;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.back-button, .start-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+
+button.back-button {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 1.3em 3em;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background-color: #fff;
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    margin-right: -20px;
+  }
+  
+  button.back-button:hover {
+    font-family: Arial, Helvetica, sans-serif;  
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #f44336;
+    box-shadow: 0px 15px 20px rgba(247, 52, 26, 0.459);
+    color: #fff;
+    transform: translateY(-3px);
+  }
+
+  button.start-button {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 1.3em 3em;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background-color: #fff;
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    margin-right: -5px;
+  }
+  
+  button.start-button:hover {
+    font-family: Arial, Helvetica, sans-serif;  
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #23c483;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-3px);
+  }
+
+  .info-text {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-weight: 700;
+    font-style: normal;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .popup-header {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    text-transform: uppercase;
+    color: #fff;
+    z-index: 1;
+    position: relative;
+    line-height: 1.3;
+  }
+
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .popup-content {
+    background-color: rgba(103, 125, 106, 0.8);
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 800px;
+    max-height: 700px;
+  }
+  
+  .close-button {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 1.3em 2em;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background-color: #fff;
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    margin-right: -5px;
+  }
+  .close-button:hover {
+    font-family: Arial, Helvetica, sans-serif;  
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #23c483;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-3px);
+  }
+
+  

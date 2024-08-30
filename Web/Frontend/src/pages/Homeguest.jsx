@@ -2,7 +2,7 @@ import '../css/HomePage.css';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
 import LenisScroll from './LeninScroll';
-
+import BoxReveal from "../components/magicui/box-reveal";
 
 const HomeGuest = () => {
   useEffect(() => {
@@ -24,11 +24,17 @@ const HomeGuest = () => {
       <LenisScroll />
       <div className="homepage">
         <div className="content">
-          <h1 className='headerhome'>Enhanced Golf Swing Evaluation <mark>with MediaPipe</mark></h1>
-            <p className='content'>
-              Wireless Ad-Hoc and Sensor Networks Laboratory, <br></br>Department of Computer Science and Information Engineering, <br></br>National Central University, Taiwan
-            </p>
-            <button className="getstarted" onClick={handleGetStarted}>Get Started</button>
+          <h1 className='headerhome'>
+            <BoxReveal boxColor={"rgba(64, 83, 76, 0.8)"} duration={0.5}>
+              Enhanced Golf Swing Evaluation <mark>with MediaPipe</mark>
+            </BoxReveal>
+          </h1>
+            <BoxReveal boxColor={"rgba(64, 83, 76, 0.8)"} duration={0.5}>
+              <p className='content'>
+                Wireless Ad-Hoc and Sensor Networks Laboratory, <br></br>Department of Computer Science and Information Engineering, <br></br>National Central University, Taiwan
+              </p>
+            </BoxReveal> 
+            <button className="getstarted" onClick={handleGetStarted}>Get Start</button>
         </div>
         <div className="image-placeholder">
           <img className="h-image" src="/images/landscapeBG.jpg" alt="Header-image"></img>
