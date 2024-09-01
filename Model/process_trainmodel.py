@@ -43,6 +43,11 @@ def train_and_save_models(X, y):
     le = LabelEncoder()
     y_encoded = le.fit_transform(y)
     
+    # บันทึก LabelEncoder
+    with open(os.path.join(MODEL_SAVE_PATH, "label_encoder.pkl"), 'wb') as f:
+        pickle.dump(le, f)
+    print("LabelEncoder saved.")
+    
     X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
     
     results = {}  # Dictionary to store accuracy and MSE of each model
