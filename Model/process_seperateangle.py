@@ -4,7 +4,7 @@ import pandas as pd
 
 # Path to the CSV file and video folder
 golfdb_path = './golfdb/data/GolfDB.csv'
-video_folder = './output/videos_keyframedetection/adjusted_data'
+video_folder = './output/videos_raw/csv/'
 
 # Load the CSV file
 golfdb = pd.read_csv(golfdb_path)
@@ -34,8 +34,8 @@ for index, row in golfdb.iterrows():
         folder_name = view_folders['other']
 
     # Source and destination paths
-    src_path = os.path.join(video_folder, f'keyframe_{video_id}.mp4')
-    dst_path = os.path.join(video_folder, folder_name, f'keyframe_{video_id}.mp4')
+    src_path = os.path.join(video_folder, f'{video_id}_angles.csv')
+    dst_path = os.path.join(video_folder, folder_name, f'{video_id}_angles.csv')
 
     # Move the video file to the corresponding folder
     if os.path.exists(src_path):

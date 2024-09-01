@@ -9,9 +9,9 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
-input_folder = './output/videos_keyframedetection/adjusted_data/other'
-output_folder = './output/videos_keyframedetection/adjusted_data/other/hpe_other'
-csv_output_folder = './output/videos_keyframedetection/adjusted_data/other/hpe_other/csv'
+input_folder = './input/data/videos_160/'
+output_folder = './output/videos_raw/'
+csv_output_folder = './output/videos_raw/csv'
 os.makedirs(output_folder, exist_ok=True)
 os.makedirs(csv_output_folder, exist_ok=True)
 

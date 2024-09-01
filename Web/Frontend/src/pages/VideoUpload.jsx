@@ -85,7 +85,7 @@ function UploadVideo() {
           <div className='popup-overlay'>
             <div className='popup-content'>
               <h2 className='popup-header'>This is important information<br></br><div className='subtextgreen'>Before using the model</div></h2>
-              <p className='info-text'><div className='subtextgreen'>GOLF SWING SEQUENCES</div> : There are 8 golf swing sequences.</p>
+              <p className='info-text'>GOLF SWING SEQUENCES : There are 8 golf swing sequences.</p>
               <div className="golf-info-container">
                 <div className="golf-image">
                   <img src="../images/golfswing.png" alt="Golf Swing Sequences" />
@@ -119,9 +119,9 @@ function UploadVideo() {
                   </ul>
                 </div>
               </div>
-              <p className='content'>
-                  Please make sure your video <div className='subtextgreen'>starts with the Address</div> and <div className='subtextred'>ends with the Finish</div>.
-                </p>
+              <div className='footcontent'>
+                Please make sure your video <div className='subtextgreen'>starts with the Address</div> and <div className='subtextred'>ends with the Finish</div>.
+              </div>
               <button onClick={handleClosePopup} className='close-button'>
                 continue
               </button>

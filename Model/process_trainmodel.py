@@ -1,117 +1,129 @@
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import GradientBoostingRegressor, AdaBoostRegressor, ExtraTreesRegressor
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import HuberRegressor
-from sklearn.svm import SVR
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.metrics import r2_score
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import accuracy_score, mean_squared_error
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, GRU, Dense, Conv1D, MaxPooling1D, Flatten
+from tensorflow.keras.optimizers import Adam
 import pickle
-from tqdm import tqdm
 
-# เส้นทาง
-input_folder = "./output/videos_keyframedetection/adjusted_data/other/hpe_other/spine_smoothed_csv"
-model_save_path = "./output/videos_keyframedetection/adjusted_data/other/hpe_other/model"
+# Constants
+CSV_FOLDER = "./output/videos_raw/csv/face_on"
+MODEL_SAVE_PATH = "./output/videos_raw/model/face_on"
 
-# ฟีเจอร์
-features = [
-    'Left Shoulder Angle', 'Right Shoulder Angle',
-    'Left Elbow Angle', 'Right Elbow Angle',
-    'Left Hip Angle', 'Right Hip Angle',
-    'Left Knee Angle', 'Right Knee Angle'
-]
-
-# อ่านข้อมูล
-data = []
-print("Reading CSV files...")
-for filename in tqdm(os.listdir(input_folder)):
-    if filename.endswith(".csv"):
-        file_path = os.path.join(input_folder, filename)
-        df = pd.read_csv(file_path)
-        data.append(df[features])
-
-all_data = pd.concat(data, ignore_index=True)
-
-# เตรียมข้อมูล
-X = all_data[features]
-y = all_data[features]
-
-# แบ่งข้อมูล
-print("Splitting data into train and test sets...")
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
-# ฟีเจอร์เชิงพหุนาม
-degree = 2
-poly = PolynomialFeatures(degree)
-X_train_poly = poly.fit_transform(X_train)
-X_test_poly = poly.transform(X_test)
-
-# รายชื่อโมเดลที่ใช้
-models = {
-    "LinearRegression": LinearRegression(),
-    "DecisionTreeRegressor": DecisionTreeRegressor(),
-    "RandomForestRegressor": RandomForestRegressor(n_estimators=100, random_state=42),
-    "KNeighborsRegressor": KNeighborsRegressor(n_neighbors=5),
-    "GradientBoostingRegressor": GradientBoostingRegressor(n_estimators=100, random_state=42),
-    "AdaBoostRegressor": AdaBoostRegressor(n_estimators=100, random_state=42),
-    "ExtraTreesRegressor": ExtraTreesRegressor(n_estimators=100, random_state=42),
-    "HuberRegressor": HuberRegressor()
-}
-
-# ฝึกและประเมินโมเดล
-for model_name, model in models.items():
-    print(f"Training {model_name}...")
-    model.fit(X_train_poly, y_train)
-
-    print(f"Evaluating {model_name}...")
-    y_pred = model.predict(X_test_poly)
-    r2_scores = {feature: r2_score(y_test[feature], y_pred[:, i]) for i, feature in enumerate(features)}
-
-    # บันทึกโมเดล
-    model_path = os.path.join(model_save_path, f"{model_name}_model.pkl")
-    print(f"Saving {model_name}...")
-    os.makedirs(os.path.dirname(model_path), exist_ok=True)
-    with open(model_path, 'wb') as model_file:
-        pickle.dump(model, model_file)
+# Function to load and combine data from CSV files
+def load_and_prepare_data(csv_folder):
+    print("Loading data from CSV files...")
+    all_data = []
+    for filename in os.listdir(csv_folder):
+        if filename.endswith('_angles.csv'):
+            df = pd.read_csv(os.path.join(csv_folder, filename))
+            all_data.append(df)
+            print(f"Loaded {filename}")
     
-    print(f"Model training complete and saved as '{model_path}'")
-    for feature, score in r2_scores.items():
-        print(f"R² score for {feature} with {model_name}: {score:.4f}")
+    combined_data = pd.concat(all_data, ignore_index=True)
+    print("Data loading complete.")
+    
+    # Selecting features and target
+    X = combined_data[['Left Shoulder Angle', 'Right Shoulder Angle', 'Left Elbow Angle', 
+                       'Right Elbow Angle', 'Left Hip Angle', 'Right Hip Angle', 
+                       'Left Knee Angle', 'Right Knee Angle']]
+    y = combined_data['Pose']
+    
+    return X, y
 
-# Function to test a new sample and show the percentage similarity
-def test_sample(sample, model):
-    sample_poly = poly.transform([sample])
-    pred = model.predict(sample_poly)
-    similarity = 100 - abs((sample - pred[0]) / sample * 100)
-    average_similarity = similarity.mean()
-    return similarity, average_similarity
+# Function to train and save models
+def train_and_save_models(X, y):
+    # Ensure the directory exists
+    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
+    
+    # Encode labels
+    le = LabelEncoder()
+    y_encoded = le.fit_transform(y)
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
+    
+    results = {}  # Dictionary to store accuracy and MSE of each model
 
-# Test with a sample (replace with your actual sample data)
-sample_data = [45, 50, 90, 85, 120, 115, 140, 135]  # Example sample data
+    # RandomForestClassifier
+    print("Training RandomForestClassifier...")
+    rf_clf = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf_clf.fit(X_train, y_train)
+    y_pred = rf_clf.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    results['RandomForestClassifier'] = accuracy
+    print(f"RandomForestClassifier Accuracy: {accuracy:.2f}")
+    with open(os.path.join(MODEL_SAVE_PATH, "random_forest_classifier.pkl"), 'wb') as f:
+        pickle.dump(rf_clf, f)
+    print("RandomForestClassifier model saved.")
+    
+    # RandomForestRegressor
+    print("Training RandomForestRegressor...")
+    rf_reg = RandomForestRegressor(n_estimators=100, random_state=42)
+    rf_reg.fit(X_train, y_train)  # Use encoded labels
+    y_pred_reg = rf_reg.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred_reg)
+    results['RandomForestRegressor MSE'] = mse
+    print(f"RandomForestRegressor MSE: {mse:.2f}")
+    with open(os.path.join(MODEL_SAVE_PATH, "random_forest_regressor.pkl"), 'wb') as f:
+        pickle.dump(rf_reg, f)
+    print("RandomForestRegressor model saved.")
+    
+    # LSTM Model
+    print("Training LSTM model...")
+    X_train_reshaped = X_train.values.reshape((X_train.shape[0], X_train.shape[1], 1))
+    X_test_reshaped = X_test.values.reshape((X_test.shape[0], X_test.shape[1], 1))
+    lstm_model = Sequential([
+        LSTM(64, input_shape=(X_train_reshaped.shape[1], 1), activation='relu'),
+        Dense(len(le.classes_), activation='softmax')
+    ])
+    lstm_model.compile(optimizer=Adam(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    lstm_model.fit(X_train_reshaped, y_train, epochs=10, batch_size=32, validation_split=0.2)
+    loss, lstm_accuracy = lstm_model.evaluate(X_test_reshaped, y_test)
+    results['LSTM'] = lstm_accuracy
+    print(f"LSTM Accuracy: {lstm_accuracy:.2f}")
+    lstm_model.save(os.path.join(MODEL_SAVE_PATH, "lstm_model.h5"))
+    print("LSTM model saved.")
+    
+    # GRU Model
+    print("Training GRU model...")
+    gru_model = Sequential([
+        GRU(64, input_shape=(X_train_reshaped.shape[1], 1), activation='relu'),
+        Dense(len(le.classes_), activation='softmax')
+    ])
+    gru_model.compile(optimizer=Adam(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    gru_model.fit(X_train_reshaped, y_train, epochs=10, batch_size=32, validation_split=0.2)
+    loss, gru_accuracy = gru_model.evaluate(X_test_reshaped, y_test)
+    results['GRU'] = gru_accuracy
+    print(f"GRU Accuracy: {gru_accuracy:.2f}")
+    gru_model.save(os.path.join(MODEL_SAVE_PATH, "gru_model.h5"))
+    print("GRU model saved.")
+    
+    # 1D CNN Model
+    print("Training 1D CNN model...")
+    cnn_model = Sequential([
+        Conv1D(64, 2, activation='relu', input_shape=(X_train_reshaped.shape[1], 1)),
+        MaxPooling1D(2),
+        Flatten(),
+        Dense(len(le.classes_), activation='softmax')
+    ])
+    cnn_model.compile(optimizer=Adam(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    cnn_model.fit(X_train_reshaped, y_train, epochs=10, batch_size=32, validation_split=0.2)
+    loss, cnn_accuracy = cnn_model.evaluate(X_test_reshaped, y_test)
+    results['1D CNN'] = cnn_accuracy
+    print(f"1D CNN Accuracy: {cnn_accuracy:.2f}")
+    cnn_model.save(os.path.join(MODEL_SAVE_PATH, "cnn_model.h5"))
+    print("1D CNN model saved.")
+    
+    # Print summary of results
+    print("\nTraining Summary:")
+    for model_name, metric in results.items():
+        print(f"{model_name}: {metric:.2f}")
 
-for model_name, model in models.items():
-    similarity, average_similarity = test_sample(sample_data, model)
-    print(f"{model_name} similarity percentage: {similarity}")
-    print(f"{model_name} average similarity percentage: {average_similarity}")
-
-# ฟังก์ชันทดสอบ
-def test_with_csv(file_path, model):
-    df = pd.read_csv(file_path)
-    sample_data = df[features].values
-    sample_poly = poly.transform(sample_data)
-    preds = model.predict(sample_poly)
-    similarity_percentages = 100 - abs((sample_data - preds) / sample_data * 100)
-    average_similarity = similarity_percentages.mean(axis=0)
-    return similarity_percentages, average_similarity
-
-test_file_path = "./output/videos_keyframedetection/adjusted_data/down_the_line/hpe_down_the_line/smoothed_csv/keyframe_0_angles.csv"
-
-for model_name, model in models.items():
-    similarity_percentages, average_similarity = test_with_csv(test_file_path, model)
-    print(f"{model_name} similarity percentages:\n{similarity_percentages}")
-    print(f"{model_name} average similarity percentage for each feature:\n{average_similarity}")
-    print(f"{model_name} overall average similarity percentage: {average_similarity.mean()}")
+# Main execution
+if __name__ == "__main__":
+    X, y = load_and_prepare_data(CSV_FOLDER)
+    train_and_save_models(X, y)
+    print("Training process complete.")
