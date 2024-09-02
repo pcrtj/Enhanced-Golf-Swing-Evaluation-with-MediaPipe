@@ -13,10 +13,16 @@ MODEL_SAVE_PATH = "./output/videos_raw/model/face_on"
 def load_sample_data(csv_file):
     print("Loading sample data...")
     df = pd.read_csv(csv_file)
+
+    df[['Left Wrist x', 'Left Wrist y']] = df['x, y Left Wrist'].str.split(', ', expand=True).astype(float)
+    df[['Right Wrist x', 'Right Wrist y']] = df['x, y Right Wrist'].str.split(', ', expand=True).astype(float)
+
     X_sample = df[['Left Shoulder Angle', 'Right Shoulder Angle', 'Left Elbow Angle', 
                    'Right Elbow Angle', 'Left Hip Angle', 'Right Hip Angle', 
-                   'Left Knee Angle', 'Right Knee Angle']]
+                   'Left Knee Angle', 'Right Knee Angle',
+                   'Left Wrist x', 'Left Wrist y', 'Right Wrist x', 'Right Wrist y']]
     y_sample = df['Pose']
+    
     print("Sample data loaded.")
     return X_sample, y_sample
 

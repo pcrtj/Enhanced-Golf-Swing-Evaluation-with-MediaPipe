@@ -10,8 +10,8 @@ from tensorflow.keras.optimizers import Adam
 import pickle
 
 # Constants
-CSV_FOLDER = "./output/videos_raw/csv/face_on"
-MODEL_SAVE_PATH = "./output/videos_raw/model/face_on"
+CSV_FOLDER = "./output/videos_raw/csv/down_the_line"
+MODEL_SAVE_PATH = "./output/videos_raw/model/down_the_line"
 
 # Function to load and combine data from CSV files
 def load_and_prepare_data(csv_folder):
@@ -26,10 +26,15 @@ def load_and_prepare_data(csv_folder):
     combined_data = pd.concat(all_data, ignore_index=True)
     print("Data loading complete.")
     
+    # แยก 'x, y Left Wrist' และ 'x, y Right Wrist' ออกเป็นคอลัมน์แยก
+    combined_data[['Left Wrist x', 'Left Wrist y']] = combined_data['x, y Left Wrist'].str.split(', ', expand=True).astype(float)
+    combined_data[['Right Wrist x', 'Right Wrist y']] = combined_data['x, y Right Wrist'].str.split(', ', expand=True).astype(float)
+    
     # Selecting features and target
     X = combined_data[['Left Shoulder Angle', 'Right Shoulder Angle', 'Left Elbow Angle', 
                        'Right Elbow Angle', 'Left Hip Angle', 'Right Hip Angle', 
-                       'Left Knee Angle', 'Right Knee Angle']]
+                       'Left Knee Angle', 'Right Knee Angle', 
+                       'Left Wrist x', 'Left Wrist y', 'Right Wrist x', 'Right Wrist y']]
     y = combined_data['Pose']
     
     return X, y
