@@ -52,6 +52,9 @@ input{
 	outline: none;
 	border-radius: 5px;
 }
+input.textinput{
+	color: #000;
+}
 button.loginpage{
 	width: 60%;
 	height: 40px;
