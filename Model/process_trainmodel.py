@@ -30,12 +30,16 @@ def load_and_prepare_data(csv_folder):
     # แยก 'x, y Left Wrist' และ 'x, y Right Wrist' ออกเป็นคอลัมน์แยก
     combined_data[['Left Wrist x', 'Left Wrist y']] = combined_data['x, y Left Wrist'].str.split(', ', expand=True).astype(float)
     combined_data[['Right Wrist x', 'Right Wrist y']] = combined_data['x, y Right Wrist'].str.split(', ', expand=True).astype(float)
+
+    combined_data[['Left Ankle x', 'Left Ankle y']] = combined_data['x, y Left Ankle'].str.split(', ', expand=True).astype(float)
+    combined_data[['Right Ankle x', 'Right Ankle y']] = combined_data['x, y Right Ankle'].str.split(', ', expand=True).astype(float)
     
     # Selecting features and target
     X = combined_data[['Left Shoulder Angle', 'Right Shoulder Angle', 'Left Elbow Angle', 
                        'Right Elbow Angle', 'Left Hip Angle', 'Right Hip Angle', 
                        'Left Knee Angle', 'Right Knee Angle', 
-                       'Left Wrist x', 'Left Wrist y', 'Right Wrist x', 'Right Wrist y']]
+                       'Left Wrist x', 'Left Wrist y', 'Right Wrist x', 'Right Wrist y',
+                       'Left Ankle x', 'Left Ankle y', 'Right Ankle x', 'Right Ankle y']]
     y = combined_data['Pose']
     
     return X, y
