@@ -22,7 +22,7 @@ def load_sample_data(csv_file):
                    'Left Knee Angle', 'Right Knee Angle',
                    'Left Wrist x', 'Left Wrist y', 'Right Wrist x', 'Right Wrist y']]
     y_sample = df['Pose']
-    
+
     print("Sample data loaded.")
     return X_sample, y_sample
 

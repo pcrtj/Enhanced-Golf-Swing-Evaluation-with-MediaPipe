@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score, mean_squared_error
@@ -10,8 +11,8 @@ from tensorflow.keras.optimizers import Adam
 import pickle
 
 # Constants
-CSV_FOLDER = "./output/videos_raw/csv/down_the_line"
-MODEL_SAVE_PATH = "./output/videos_raw/model/down_the_line"
+CSV_FOLDER = "./output/videos_raw/csv/face_on"
+MODEL_SAVE_PATH = "./output/videos_raw/model/face_on"
 
 # Function to load and combine data from CSV files
 def load_and_prepare_data(csv_folder):
@@ -57,6 +58,18 @@ def train_and_save_models(X, y):
     
     results = {}  # Dictionary to store accuracy and MSE of each model
 
+    # Train DecisionTreeClassifier model
+    print("Training DecisionTreeClassifier...")
+    dt_classifier = DecisionTreeClassifier(random_state=42)
+    dt_classifier.fit(X_train, y_train)
+    y_pred_dt = dt_classifier.predict(X_test)
+    accuracy_dt = accuracy_score(y_test, y_pred_dt)
+    results['DecisionTreeClassifier'] = accuracy_dt
+    print(f"DecisionTreeClassifier Accuracy: {accuracy_dt}")
+    with open(os.path.join(MODEL_SAVE_PATH, 'decision_tree_classifier.pkl'), 'wb') as f:
+        pickle.dump(dt_classifier, f)
+    print("DecisionTreeClassifier model saved.")
+
     # RandomForestClassifier
     print("Training RandomForestClassifier...")
     rf_clf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -69,17 +82,17 @@ def train_and_save_models(X, y):
         pickle.dump(rf_clf, f)
     print("RandomForestClassifier model saved.")
     
-    # RandomForestRegressor
-    print("Training RandomForestRegressor...")
-    rf_reg = RandomForestRegressor(n_estimators=100, random_state=42)
-    rf_reg.fit(X_train, y_train)  # Use encoded labels
-    y_pred_reg = rf_reg.predict(X_test)
-    mse = mean_squared_error(y_test, y_pred_reg)
-    results['RandomForestRegressor MSE'] = mse
-    print(f"RandomForestRegressor MSE: {mse:.2f}")
-    with open(os.path.join(MODEL_SAVE_PATH, "random_forest_regressor.pkl"), 'wb') as f:
-        pickle.dump(rf_reg, f)
-    print("RandomForestRegressor model saved.")
+    # # RandomForestRegressor
+    # print("Training RandomForestRegressor...")
+    # rf_reg = RandomForestRegressor(n_estimators=100, random_state=42)
+    # rf_reg.fit(X_train, y_train)  # Use encoded labels
+    # y_pred_reg = rf_reg.predict(X_test)
+    # mse = mean_squared_error(y_test, y_pred_reg)
+    # results['RandomForestRegressor MSE'] = mse
+    # print(f"RandomForestRegressor MSE: {mse:.2f}")
+    # with open(os.path.join(MODEL_SAVE_PATH, "random_forest_regressor.pkl"), 'wb') as f:
+    #     pickle.dump(rf_reg, f)
+    # print("RandomForestRegressor model saved.")
     
     # LSTM Model
     print("Training LSTM model...")
