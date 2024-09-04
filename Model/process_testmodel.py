@@ -17,10 +17,14 @@ def load_sample_data(csv_file):
     df[['Left Wrist x', 'Left Wrist y']] = df['x, y Left Wrist'].str.split(', ', expand=True).astype(float)
     df[['Right Wrist x', 'Right Wrist y']] = df['x, y Right Wrist'].str.split(', ', expand=True).astype(float)
 
+    df[['Left Ankle x', 'Left Ankle y']] = df['x, y Left Ankle'].str.split(', ', expand=True).astype(float)
+    df[['Right Ankle x', 'Right Ankle y']] = df['x, y Right Ankle'].str.split(', ', expand=True).astype(float)
+
     X_sample = df[['Left Shoulder Angle', 'Right Shoulder Angle', 'Left Elbow Angle', 
                    'Right Elbow Angle', 'Left Hip Angle', 'Right Hip Angle', 
                    'Left Knee Angle', 'Right Knee Angle',
-                   'Left Wrist x', 'Left Wrist y', 'Right Wrist x', 'Right Wrist y']]
+                   'Left Wrist x', 'Left Wrist y', 'Right Wrist x', 'Right Wrist y',
+                   'Left Ankle x', 'Left Ankle y', 'Right Ankle x', 'Right Ankle y']]
     y_sample = df['Pose']
 
     print("Sample data loaded.")
