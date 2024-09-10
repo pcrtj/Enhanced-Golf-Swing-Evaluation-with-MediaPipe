@@ -2,10 +2,14 @@ import os
 from moviepy.editor import VideoFileClip
 from moviepy.video.fx import speedx
 
-input_folder = "./output/videos_keyframedetection/raw_data"
-output_folder = "./output/videos_keyframedetection/adjusted_data"
-median_duration = 2.335669002335669  # ความยาวเป็นวินาที
-
+input_folder = "./output/baseline/combined"
+output_folder = "./output/baseline/combined/adjusted"
+# median_duration = 2.335669002335669  # ความยาวเป็นวินาที
+# median_duration = 9.40940940940941  # down-the-line
+# median_duration = 9.65006010418058  # face-on
+# median_duration = 9.107584346632601  # other
+# median_duration = 9.540647925555941  # combined
+median_duration = 8.208208208208209  # combined realtime
 os.makedirs(output_folder, exist_ok=True)
 
 def adjust_video_duration(input_path, output_path, target_duration):

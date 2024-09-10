@@ -84,7 +84,7 @@ function UploadVideo() {
         {showPopup && (
           <div className='popup-overlay'>
             <div className='popup-content'>
-              <h2 className='popup-header'>This is important information<br></br><div className='subtextgreen'>Before using the model</div></h2>
+              <h2 className='popup-header'><div className='subtextgreen'>Before using the model</div></h2>
               <p className='info-text'>GOLF SWING SEQUENCES : There are 8 golf swing sequences.</p>
               <div className="golf-info-container">
                 <div className="golf-image">

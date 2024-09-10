@@ -11,8 +11,8 @@ from tensorflow.keras.optimizers import Adam
 import pickle
 
 # Constants
-CSV_FOLDER = "./output/videos_raw/csv/face_on"
-MODEL_SAVE_PATH = "./output/videos_raw/model/face_on"
+CSV_FOLDER = "./output/videos_raw/csv/down_the_line"
+MODEL_SAVE_PATH = "./output/videos_raw/model/down_the_line"
 
 # Function to load and combine data from CSV files
 def load_and_prepare_data(csv_folder):
@@ -40,6 +40,7 @@ def load_and_prepare_data(csv_folder):
                        'Left Knee Angle', 'Right Knee Angle', 
                        'Left Wrist x', 'Left Wrist y', 'Right Wrist x', 'Right Wrist y',
                        'Left Ankle x', 'Left Ankle y', 'Right Ankle x', 'Right Ankle y']]
+    # 'Left Ankle x', 'Left Ankle y', 'Right Ankle x', 'Right Ankle y'
     y = combined_data['Pose']
     
     return X, y

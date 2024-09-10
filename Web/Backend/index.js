@@ -86,6 +86,33 @@ app.post('/signup', (req, res) => {
     });
 });
 
+app.get('/history', (req, res) => {
+    const sql = `
+        SELECT 
+            E.EDateTime AS DateTime,
+            E.EVideoBefore AS InputClip,
+            E.EVideoAfter AS OutputClip,
+            E.EAccuracy AS Accuracy, 
+            E.EAvgAccuracy AS AverageAccuracy
+        FROM 
+            event E
+        ORDER BY 
+            E.EDateTime DESC
+        LIMIT 6 OFFSET ?;
+    `;
+
+    const page = parseInt(req.query.page) || 1;  // หน้าแรกเริ่มจาก 1
+    const offset = (page - 1) * 6;  // เลื่อนทีละ 6 rows
+
+    db.query(sql, [offset], (err, results) => {
+        if (err) {
+            console.error('Error fetching history data:', err);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        res.status(200).json(results);
+    });
+});
 
 
 

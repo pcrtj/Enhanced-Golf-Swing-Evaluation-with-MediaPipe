@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 
-folder_path = "./output/videos_keyframedetection/raw_data/hpe_raw_data/keyframe_raw_csv"
+folder_path = "./output/videos_raw/csv/combined/realtime"
 
 time_values = []
 

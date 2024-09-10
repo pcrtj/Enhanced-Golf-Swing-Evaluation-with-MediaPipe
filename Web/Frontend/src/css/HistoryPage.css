@@ -1,3 +1,4 @@
+
 body.history-page{
     margin: 0;
       padding: 0;
@@ -52,3 +53,101 @@ body.history-page{
       z-index: 1;
       position: relative;
     }
+
+    /* General layout */
+.history-container {
+  padding: 20px;
+  background: linear-gradient(to bottom, rgba(103, 125, 106, 0.8), rgba(64, 83, 76, 0.8), rgba(26, 54, 54, 0.8));
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+h2 {
+  color: #333;
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #444;
+  color: white;
+}
+
+/* Bar chart styling */
+.bar-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bar {
+  height: 20px;
+  border-radius: 5px;
+  margin: 0 2px;
+}
+
+.bar.red {
+  background-color: red;
+}
+
+.bar.yellow {
+  background-color: yellow;
+}
+
+.bar.green {
+  background-color: green;
+}
+
+/* Circle (average accuracy) */
+.circle-container {
+  display: inline-block;
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background: conic-gradient(green calc(var(--percent) * 1%), transparent 0);
+  border-radius: 50%;
+}
+
+.circle-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Pagination styling */
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #444;
+  color: white;
+  padding: 10px;
+  border: none;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.pagination button:hover {
+  background-color: #333;
+}
+
+.pagination button:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+}

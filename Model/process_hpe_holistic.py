@@ -9,9 +9,9 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
-input_folder = './input/data/videos_160/'
-output_folder = './output/videos_raw/'
-csv_output_folder = './output/videos_raw/csv'
+input_folder = './output/baseline/combined/adjusted/realtime'
+output_folder = './output/baseline/combined/adjusted/realtime/hpe'
+csv_output_folder = './output/baseline/combined/adjusted/realtime/hpe/csv'
 os.makedirs(output_folder, exist_ok=True)
 os.makedirs(csv_output_folder, exist_ok=True)
 
@@ -40,7 +40,7 @@ def process_video(video_path, output_path, csv_folder):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
-    csv_filename = os.path.splitext(os.path.basename(video_path))[0] + '_angles.csv'
+    csv_filename = os.path.splitext(os.path.basename(video_path))[0] + '.csv'
     csv_path = os.path.join(csv_folder, csv_filename)
     
     with open(csv_path, 'w', newline='') as csvfile:
