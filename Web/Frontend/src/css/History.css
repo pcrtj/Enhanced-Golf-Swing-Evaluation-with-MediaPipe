@@ -1,7 +1,7 @@
 /* History Table Styles */
 .history-container {
     padding: 20px;
-    background-color: #1a4731;
+    background: linear-gradient(to bottom, rgba(103, 125, 106, 0.8), rgba(64, 83, 76, 0.8), rgba(26, 54, 54, 0.8));
     color: white;
     display: flex;
     flex-direction: column;
@@ -22,7 +22,7 @@
   .history-table {
     width: 100%;
     border-collapse: collapse;
-    background-color: rgba(103, 125, 106, 0.5);
+    background-color: rgba(103, 125, 106, 0.2);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
@@ -37,7 +37,7 @@
   }
   
   .history-table th {
-    background-color: rgba(26,54,54,0.4);
+    background-color: rgba(64, 83, 76, 0.6);
   }
   
   .history-table tr {
@@ -68,28 +68,62 @@
   
   /* Chart Container Styles */
   .chart-container {
-    height: 150px;
     width: 100%;
+    max-width: 600px;
   }
   
   /* Pagination Styles */
   .pagination {
+    margin-top: 10px;
     margin-bottom: 20px;
     display: flex;
     justify-content: center;
+    gap: 20px;
   }
   
-  .pagination-button {
-    margin: 0 10px;
-    padding: 8px 16px;
-    background-color: #2d6a4f;
-    color: white;
+  .pagination-button-pre,.pagination-button-next {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 1em 2em;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background-color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
     cursor: pointer;
+    outline: none;
   }
   
-  .pagination-button:disabled {
+  .pagination-button-next:hover {
+    font-family: Arial, Helvetica, sans-serif;  
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #23c483;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  .pagination-button-pre:hover {
+    font-family: Arial, Helvetica, sans-serif;  
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #237cc4;
+    box-shadow: 0px 15px 20px rgba(46, 177, 229, 0.4);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+
+  .pagination-button-pre:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .pagination-button-next:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import '../css/videoupload.css';
 import BoxReveal from "../components/magicui/box-reveal";
 import axios from 'axios';
@@ -11,9 +11,17 @@ function UploadVideo() {
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [processedResult, setProcessedResult] = useState(null);
+  const [outputVideoPath, setOutputVideoPath] = useState(null);
   const videoRef = useRef(null);
+  const navigate = useNavigate();
 
-  document.body.style.overflow = "hidden";
+  useEffect(() => {
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const handleClosePopup = () => {
     setShowPopup(false);
@@ -54,6 +62,14 @@ function UploadVideo() {
       formData.append('startTime', startTime);
       formData.append('endTime', endTime);
 
+      const username = sessionStorage.getItem('username');
+      if (!username) {
+        console.error('User not logged in');
+        navigate('/login');
+        return;
+      }
+      formData.append('username', username);
+
       try {
         const response = await axios.post('/api/upload', formData, {
           headers: {
@@ -61,30 +77,20 @@ function UploadVideo() {
           },
         });
         console.log('Response:', response.data);
+        setProcessedResult(response.data);
+        setOutputVideoPath(response.data.outputVideoPath);
       } catch (error) {
         console.error('Error uploading the video:', error);
       }
     }
   };
 
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-    }
-    return () => {
-      if (videoRef.current) {
-        videoRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      }
-    };
-  }, [videoPreview]);
-
   return (
     <div className="page-body">
-      <div>
-        {showPopup && (
-          <div className='popup-overlay'>
-            <div className='popup-content'>
-              <h2 className='popup-header'><div className='subtextgreen'>Before using the model</div></h2>
+      {showPopup && (
+        <div className='popup-overlay'>
+          <div className='popup-content'>
+              <h2 className='popup-header'><div className='beforeusing'>Before using the model</div></h2>
               <p className='info-text'>GOLF SWING SEQUENCES : There are 8 golf swing sequences.</p>
               <div className="golf-info-container">
                 <div className="golf-image">
@@ -126,73 +132,89 @@ function UploadVideo() {
                 continue
               </button>
             </div>
-          </div>
-        )}
-        {!showPopup && (
-          <div>
-            <div className="upload-container">
-              <BoxReveal boxColor={"rgba(64, 83, 76, 0.8)"} duration={0.5}>
-                <h1 className='headerhome'>Upload Your Video</h1>
-                <p className='content'>
-                  Please make sure your video <div className='subtextgreen'>starts with the Address</div> and <div className='subtextred'>ends with the Finish</div>.
-                </p>
-              </BoxReveal>
-              <div className="upload-input">
-                <input type="file" accept="video/*" onChange={handleVideoUpload} />
-                {videoPreview ? (
-                  <div className="video-preview-container">
-                    <video 
-                      ref={videoRef}
-                      src={videoPreview} 
-                      controls 
-                      style={{ width: '100%', height: '100%' }} 
-                    />
-                    <div className="trim-controls">
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max={duration} 
-                        value={startTime}
-                        onChange={handleStartTimeChange}
-                      />
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max={duration} 
-                        value={endTime}
-                        onChange={handleEndTimeChange}
-                      />
-                    </div>
-                    <div className="trim-times">
-                      <span>Start: {startTime.toFixed(2)}s</span>
-                      <span>End: {endTime.toFixed(2)}s</span>
-                    </div>
-                  </div>
-                ) : (
-                  <p className='click'>Click to upload video</p>
-                )}
-              </div>
+        </div>
+      )}
+      {!showPopup && (
+        <div>
+          <div className="upload-container">
+            <BoxReveal boxColor={"rgba(64, 83, 76, 0.8)"} duration={0.5}>
+              <h1 className='headerhome'>Upload Your Video</h1>
+              <p className='content'>
+                Please make sure your video <span className='subtextgreen'>starts with the Address</span> and <span className='subtextred'>ends with the Finish</span>.
+              </p>
+            </BoxReveal>
+            <div className="upload-input">
+              <input type="file" accept="video/*" onChange={handleVideoUpload} />
               {videoPreview ? (
-                <div className="button-container">
-                  <button className="back-button" onClick={() => {
-                    setVideoPreview(null);
-                    setSelectedFile(null);
-                    setStartTime(0);
-                    setEndTime(0);
-                  }}>CANCEL</button>
-                  <button className="start-button" onClick={handleStart}>START</button>
+                <div className="video-preview-container">
+                  <video 
+                    ref={videoRef}
+                    src={videoPreview} 
+                    controls 
+                    onLoadedMetadata={handleLoadedMetadata}
+                    style={{ width: '100%', height: '100%' }} 
+                  />
+                  <div className="trim-controls">
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max={duration} 
+                      value={startTime}
+                      onChange={handleStartTimeChange}
+                    />
+                    <input 
+                      type="range" 
+                      min="0" 
+                      max={duration} 
+                      value={endTime}
+                      onChange={handleEndTimeChange}
+                    />
+                  </div>
+                  <div className="trim-times">
+                    <span>Start: {startTime.toFixed(2)}s</span>
+                    <span>End: {endTime.toFixed(2)}s</span>
+                  </div>
                 </div>
               ) : (
-                <div className="button-container">
-                  <Link to="/homeuser">
-                    <button className="back-button">BACK</button>
-                  </Link>
-                </div>
+                <p className='click'>Click to upload video</p>
               )}
             </div>
+            {videoPreview ? (
+              <div className="button-container">
+                <button className="back-button" onClick={() => {
+                  setVideoPreview(null);
+                  setSelectedFile(null);
+                  setStartTime(0);
+                  setEndTime(0);
+                }}>CANCEL</button>
+                <button className="start-button" onClick={handleStart}>START</button>
+              </div>
+            ) : (
+              <div className="button-container">
+                <Link to="/homeuser">
+                  <button className="back-button">BACK</button>
+                </Link>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+          {processedResult && (
+            <div className="result-container">
+              <h2>Processing Result</h2>
+              <p>Average Accuracy: {processedResult.avgAccuracy}%</p>
+              <p>Accuracy per Phase:</p>
+              <ul>
+                {processedResult.accuracy.map((acc, index) => (
+                  <li key={index}>{`Phase ${index + 1}: ${acc}%`}</li>
+                ))}
+              </ul>
+              {outputVideoPath && (
+                <video controls src={`/uploads/${outputVideoPath.split('/').slice(-3).join('/')}`} style={{ width: '100%', maxWidth: '500px' }} />
+              )}
+              <button onClick={() => navigate('/history')}>View History</button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

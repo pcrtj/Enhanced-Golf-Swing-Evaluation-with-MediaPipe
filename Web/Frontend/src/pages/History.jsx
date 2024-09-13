@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { mockHistoryData } from '../mockupdata/historyData';
 import '../css/History.css';
@@ -9,16 +9,16 @@ const CircularProgress = ({ value }) => {
   const strokeDashoffset = circumference - (value / 100) * circumference;
 
   const getColor = (value) => {
-    if (value <= 30) return '#FF0000';
-    if (value <= 60) return '#FFFF00';
+    if (value < 31) return '#FF0000';
+    if (value < 61) return '#FFFF00';
     return '#00FF00';
   };
 
   return (
     <div className="circular-progress">
-      <svg>
+      <svg width="80" height="80">
         <circle
-          stroke="#ccc"
+          stroke="#2d6a4f"
           strokeWidth="5"
           fill="transparent"
           r={radius}
@@ -65,18 +65,18 @@ const HistoryTable = () => {
     }
   };
 
-  const getBarColor = (value) => {
-    if (value <= 30) return '#3498DB';  // เปลี่ยนเป็นสีฟ้า
-    if (value <= 60) return '#E67E22';  // เปลี่ยนเป็นสีส้ม
-    return '#2ECC71';                   // เปลี่ยนเป็นสีเขียวเข้ม
-  };
-
   const swingPhases = ['A', 'TU', 'MB', 'T', 'MD', 'I', 'MFT', 'F'];
+
+  const getBarColor = (value) => {
+    if (value < 31) return '#FF0000';
+    if (value < 61) return '#FFFF00';
+    return '#00FF00';
+  };
 
   const renderTableRows = () => {
     const rows = [];
-    for (let i = 0; i < rowsPerPage; i++) {
-      const item = historyData[startIdx + i];
+    for (let i = startIdx; i < endIdx; i++) {
+      const item = historyData[i];
       if (item) {
         rows.push(
           <tr key={item.id}>
@@ -85,12 +85,41 @@ const HistoryTable = () => {
             <td>{item.outputClip}</td>
             <td>
               <div className="chart-container">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={100}>
                   <BarChart data={item.accuracy.map((value, idx) => ({ name: swingPhases[idx], value }))}>
-                    <XAxis dataKey="name" stroke="#ffffff" />
-                    <YAxis stroke="#ffffff" />
-                    <Tooltip contentStyle={{ backgroundColor: '#1a4731', border: 'none', borderRadius: '4px' }} />
-                    <Bar dataKey="value" fill={(entry) => getBarColor(entry.value)} />
+                    <XAxis 
+                      dataKey="name" 
+                      stroke="#ffffff" 
+                      axisLine={{ stroke: '#ffffff' }} 
+                      tickLine={{ stroke: '#ffffff' }}
+                    />
+                    <YAxis 
+                      stroke="#ffffff" 
+                      axisLine={{ stroke: '#ffffff' }} 
+                      tickLine={{ stroke: '#ffffff' }} 
+                      domain={[0, 100]}
+                    />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#1a4731', border: 'none', borderRadius: '4px' }}
+                      cursor={{ fill: 'transparent' }}
+                    />
+                    <Bar 
+                      dataKey="value" 
+                      fill="#FFFFFF"  // ตั้งค่าเริ่มต้นเป็นสีขาว
+                      shape={(props) => {
+                        const { x, y, width, height, value } = props;
+                        return (
+                          <rect 
+                            x={x} 
+                            y={y} 
+                            width={width} 
+                            height={height} 
+                            fill={getBarColor(value)} 
+                            stroke="none"
+                          />
+                        );
+                      }}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -100,8 +129,6 @@ const HistoryTable = () => {
             </td>
           </tr>
         );
-      } else {
-        rows.push(<tr key={`empty-${i}`}><td colSpan="5">&nbsp;</td></tr>);
       }
     }
     return rows;
@@ -129,14 +156,14 @@ const HistoryTable = () => {
         <button
           onClick={prevPage}
           disabled={currentPage === 1}
-          className="pagination-button"
+          className="pagination-button-pre"
         >
           Previous
         </button>
         <button
           onClick={nextPage}
           disabled={endIdx >= historyData.length}
-          className="pagination-button"
+          className="pagination-button-next"
         >
           Next
         </button>

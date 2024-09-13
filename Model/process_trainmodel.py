@@ -1,157 +1,279 @@
+# import os
+# import pandas as pd
+# import numpy as np
+# from sklearn.model_selection import train_test_split
+# from sklearn.preprocessing import LabelEncoder, StandardScaler
+# from sklearn.tree import DecisionTreeClassifier
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.metrics import accuracy_score
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.layers import LSTM, Dense, Dropout, GRU, Conv1D, MaxPooling1D, Flatten
+# from tensorflow.keras.utils import to_categorical
+# from tensorflow.keras.callbacks import Callback
+# import joblib
+# from tqdm import tqdm
+
+# # กำหนด path
+# CSV_FOLDER = "./output/videos_raw/csv/combined/realtime"
+# MODEL_SAVE_PATH = "./output/videos_raw/model/combined/realtime/feature correlation/compare model"
+
+# # สร้าง custom callback สำหรับ tqdm
+# class TqdmProgressCallback(Callback):
+#     def __init__(self, epochs):
+#         super().__init__()
+#         self.progress_bar = tqdm(total=epochs, desc="Training", unit="epoch")
+
+#     def on_epoch_end(self, epoch, logs=None):
+#         self.progress_bar.update(1)
+
+#     def on_train_end(self, logs=None):
+#         self.progress_bar.close()
+
+# # ฟังก์ชันสำหรับโหลดและเตรียมข้อมูล
+# def load_and_prepare_data(csv_folder):
+#     all_data = []
+#     for filename in os.listdir(csv_folder):
+#         if filename.endswith('.csv'):
+#             df = pd.read_csv(os.path.join(csv_folder, filename))
+            
+#             # แยก x, y coordinates
+#             for joint in ['Left Wrist', 'Right Wrist', 'Left Ankle', 'Right Ankle', 'Left Shoulder', 'Right Shoulder', 'Left Elbow', 'Right Elbow',
+#                           'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee']:
+#                 df[[f'{joint} x', f'{joint} y']] = df[f'x, y {joint}'].str.split(', ', expand=True).astype(float)
+            
+#             all_data.append(df)
+    
+#     combined_data = pd.concat(all_data, ignore_index=True)
+    
+#     feature_columns = [
+#     'Time',
+#     'Left Shoulder Angle', 'Right Shoulder Angle',
+#     'Left Elbow Angle', 'Right Elbow Angle',
+#     'Left Hip Angle', 'Right Hip Angle',
+#     'Left Knee Angle', 'Right Knee Angle',
+#     'Left Shoulder x', 'Left Shoulder y',
+#     'Right Shoulder x', 'Right Shoulder y',
+#     'Left Elbow x', 'Left Elbow y',
+#     'Right Elbow x', 'Right Elbow y',
+#     'Left Hip x', 'Left Hip y',
+#     'Right Hip x', 'Right Hip y',
+#     'Left Knee x', 'Left Knee y',
+#     'Right Knee x', 'Right Knee y',
+#     'Left Wrist x', 'Left Wrist y',
+#     'Right Wrist x', 'Right Wrist y',
+#     'Left Ankle x', 'Left Ankle y',
+#     'Right Ankle x', 'Right Ankle y'
+#     ]
+    
+#     X = combined_data[feature_columns].values
+#     y = combined_data['Pose'].values
+    
+#     return X, y
+
+# # โหลดและเตรียมข้อมูล
+# X, y = load_and_prepare_data(CSV_FOLDER)
+
+# # แปลง labels เป็นตัวเลข
+# le = LabelEncoder()
+# y_encoded = le.fit_transform(y)
+
+# # แบ่งข้อมูลเป็น training และ testing sets
+# X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
+
+# # Normalize ข้อมูล
+# scaler = StandardScaler()
+# X_train_scaled = scaler.fit_transform(X_train)
+# X_test_scaled = scaler.transform(X_test)
+
+# # เก็บผลลัพธ์ accuracy
+# results = {}
+
+# # สร้างและเทรนโมเดล Decision Tree
+# print("Training Decision Tree model...")
+# dt_model = DecisionTreeClassifier(random_state=42)
+# dt_model.fit(X_train_scaled, y_train)
+# dt_accuracy = dt_model.score(X_test_scaled, y_test)
+# results['Decision Tree'] = dt_accuracy
+
+# # สร้างและเทรนโมเดล Random Forest
+# print("Training Random Forest model...")
+# rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+# rf_model.fit(X_train_scaled, y_train)
+# rf_accuracy = rf_model.score(X_test_scaled, y_test)
+# results['Random Forest'] = rf_accuracy
+
+# # เตรียมข้อมูลสำหรับโมเดล Deep Learning
+# X_train_reshaped = X_train_scaled.reshape((X_train_scaled.shape[0], 1, X_train_scaled.shape[1]))
+# X_test_reshaped = X_test_scaled.reshape((X_test_scaled.shape[0], 1, X_test_scaled.shape[1]))
+# y_train_cat = to_categorical(y_train)
+# y_test_cat = to_categorical(y_test)
+
+# # ฟังก์ชันสำหรับสร้างและเทรนโมเดล Deep Learning
+# def train_dl_model(model, model_name, epochs=50, batch_size=32):
+#     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+#     print(f"Training {model_name} model...")
+#     tqdm_callback = TqdmProgressCallback(epochs)
+#     history = model.fit(X_train_reshaped, y_train_cat, epochs=epochs, batch_size=batch_size, 
+#                         validation_data=(X_test_reshaped, y_test_cat), verbose=0,
+#                         callbacks=[tqdm_callback])
+#     test_loss, test_accuracy = model.evaluate(X_test_reshaped, y_test_cat, verbose=0)
+#     results[model_name] = test_accuracy
+#     return model, history
+
+# # สร้างและเทรนโมเดล LSTM
+# lstm_model = Sequential([
+#     LSTM(100, input_shape=(1, X_train_reshaped.shape[2]), return_sequences=True),
+#     Dropout(0.2),
+#     LSTM(50),
+#     Dropout(0.2),
+#     Dense(len(le.classes_), activation='softmax')
+# ])
+# lstm_model, lstm_history = train_dl_model(lstm_model, "LSTM")
+
+# # สร้างและเทรนโมเดล GRU
+# gru_model = Sequential([
+#     GRU(100, input_shape=(1, X_train_reshaped.shape[2]), return_sequences=True),
+#     Dropout(0.2),
+#     GRU(50),
+#     Dropout(0.2),
+#     Dense(len(le.classes_), activation='softmax')
+# ])
+# gru_model, gru_history = train_dl_model(gru_model, "GRU")
+
+# # สร้างและเทรนโมเดล 1D CNN
+# cnn_model = Sequential([
+#     Conv1D(filters=64, kernel_size=1, activation='relu', input_shape=(1, X_train_reshaped.shape[2])),
+#     Flatten(),
+#     Dense(100, activation='relu'),
+#     Dropout(0.2),
+#     Dense(len(le.classes_), activation='softmax')
+# ])
+# cnn_model, cnn_history = train_dl_model(cnn_model, "1D CNN")
+
+# # บันทึกโมเดลและข้อมูลที่เกี่ยวข้อง
+# if not os.path.exists(MODEL_SAVE_PATH):
+#     os.makedirs(MODEL_SAVE_PATH)
+
+# joblib.dump(dt_model, os.path.join(MODEL_SAVE_PATH, 'decision_tree_model.joblib'))
+# joblib.dump(rf_model, os.path.join(MODEL_SAVE_PATH, 'random_forest_model.joblib'))
+# lstm_model.save(os.path.join(MODEL_SAVE_PATH, 'lstm_model.h5'))
+# gru_model.save(os.path.join(MODEL_SAVE_PATH, 'gru_model.h5'))
+# cnn_model.save(os.path.join(MODEL_SAVE_PATH, 'cnn_model.h5'))
+# joblib.dump(le, os.path.join(MODEL_SAVE_PATH, 'label_encoder.joblib'))
+# joblib.dump(scaler, os.path.join(MODEL_SAVE_PATH, 'scaler.joblib'))
+
+# print("\nAll models have been trained and saved successfully.")
+
+# # แสดงผลสรุป accuracy
+# print("\nModel Accuracy Summary:")
+# for model, accuracy in results.items():
+#     print(f"{model}: {accuracy:.4f}")
+
+
 import os
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score, mean_squared_error
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, GRU, Dense, Conv1D, MaxPooling1D, Flatten
-from tensorflow.keras.optimizers import Adam
-import pickle
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from tensorflow.keras.utils import to_categorical
 
-# Constants
-CSV_FOLDER = "./output/videos_raw/csv/down_the_line"
-MODEL_SAVE_PATH = "./output/videos_raw/model/down_the_line"
+# กำหนด path
+CSV_FOLDER = "./output/videos_raw/csv/combined/realtime"
+MODEL_SAVE_PATH = "./output/videos_raw/model/combined/realtime/feature correlation/epoch 50/"
 
-# Function to load and combine data from CSV files
+# ฟังก์ชันสำหรับโหลดและเตรียมข้อมูล
 def load_and_prepare_data(csv_folder):
-    print("Loading data from CSV files...")
     all_data = []
     for filename in os.listdir(csv_folder):
-        if filename.endswith('_angles.csv'):
+        if filename.endswith('.csv'):
             df = pd.read_csv(os.path.join(csv_folder, filename))
+            
+            # แยก x, y coordinates
+            for joint in ['Left Wrist', 'Right Wrist', 'Left Ankle', 'Right Ankle', 'Left Shoulder', 'Right Shoulder', 'Left Elbow', 'Right Elbow',
+                          'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee']:
+                df[[f'{joint} x', f'{joint} y']] = df[f'x, y {joint}'].str.split(', ', expand=True).astype(float)
+            
             all_data.append(df)
-            print(f"Loaded {filename}")
     
     combined_data = pd.concat(all_data, ignore_index=True)
-    print("Data loading complete.")
     
-    # แยก 'x, y Left Wrist' และ 'x, y Right Wrist' ออกเป็นคอลัมน์แยก
-    combined_data[['Left Wrist x', 'Left Wrist y']] = combined_data['x, y Left Wrist'].str.split(', ', expand=True).astype(float)
-    combined_data[['Right Wrist x', 'Right Wrist y']] = combined_data['x, y Right Wrist'].str.split(', ', expand=True).astype(float)
-
-    combined_data[['Left Ankle x', 'Left Ankle y']] = combined_data['x, y Left Ankle'].str.split(', ', expand=True).astype(float)
-    combined_data[['Right Ankle x', 'Right Ankle y']] = combined_data['x, y Right Ankle'].str.split(', ', expand=True).astype(float)
+    feature_columns = [
+    'Time',
+    'Left Shoulder Angle', 'Right Shoulder Angle',
+    'Left Elbow Angle', 'Right Elbow Angle',
+    'Left Hip Angle', 'Right Hip Angle',
+    'Left Knee Angle', 'Right Knee Angle',
+    'Left Shoulder x', 'Left Shoulder y',
+    'Right Shoulder x', 'Right Shoulder y',
+    'Left Elbow x', 'Left Elbow y',
+    'Right Elbow x', 'Right Elbow y',
+    'Left Hip x', 'Left Hip y',
+    'Right Hip x', 'Right Hip y',
+    'Left Knee x', 'Left Knee y',
+    'Right Knee x', 'Right Knee y',
+    'Left Wrist x', 'Left Wrist y',
+    'Right Wrist x', 'Right Wrist y',
+    'Left Ankle x', 'Left Ankle y',
+    'Right Ankle x', 'Right Ankle y'
+    ]
     
-    # Selecting features and target
-    X = combined_data[['Left Shoulder Angle', 'Right Shoulder Angle', 'Left Elbow Angle', 
-                       'Right Elbow Angle', 'Left Hip Angle', 'Right Hip Angle', 
-                       'Left Knee Angle', 'Right Knee Angle', 
-                       'Left Wrist x', 'Left Wrist y', 'Right Wrist x', 'Right Wrist y',
-                       'Left Ankle x', 'Left Ankle y', 'Right Ankle x', 'Right Ankle y']]
-    # 'Left Ankle x', 'Left Ankle y', 'Right Ankle x', 'Right Ankle y'
-    y = combined_data['Pose']
+    X = combined_data[feature_columns].values
+    y = combined_data['Pose'].values
     
     return X, y
 
-# Function to train and save models
-def train_and_save_models(X, y):
-    # Ensure the directory exists
-    os.makedirs(MODEL_SAVE_PATH, exist_ok=True)
-    
-    # Encode labels
-    le = LabelEncoder()
-    y_encoded = le.fit_transform(y)
-    
-    # บันทึก LabelEncoder
-    with open(os.path.join(MODEL_SAVE_PATH, "label_encoder.pkl"), 'wb') as f:
-        pickle.dump(le, f)
-    print("LabelEncoder saved.")
-    
-    X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
-    
-    results = {}  # Dictionary to store accuracy and MSE of each model
+# โหลดและเตรียมข้อมูล
+X, y = load_and_prepare_data(CSV_FOLDER)
 
-    # Train DecisionTreeClassifier model
-    print("Training DecisionTreeClassifier...")
-    dt_classifier = DecisionTreeClassifier(random_state=42)
-    dt_classifier.fit(X_train, y_train)
-    y_pred_dt = dt_classifier.predict(X_test)
-    accuracy_dt = accuracy_score(y_test, y_pred_dt)
-    results['DecisionTreeClassifier'] = accuracy_dt
-    print(f"DecisionTreeClassifier Accuracy: {accuracy_dt}")
-    with open(os.path.join(MODEL_SAVE_PATH, 'decision_tree_classifier.pkl'), 'wb') as f:
-        pickle.dump(dt_classifier, f)
-    print("DecisionTreeClassifier model saved.")
+# แปลง labels เป็นตัวเลข
+le = LabelEncoder()
+y_encoded = le.fit_transform(y)
 
-    # RandomForestClassifier
-    print("Training RandomForestClassifier...")
-    rf_clf = RandomForestClassifier(n_estimators=100, random_state=42)
-    rf_clf.fit(X_train, y_train)
-    y_pred = rf_clf.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    results['RandomForestClassifier'] = accuracy
-    print(f"RandomForestClassifier Accuracy: {accuracy:.2f}")
-    with open(os.path.join(MODEL_SAVE_PATH, "random_forest_classifier.pkl"), 'wb') as f:
-        pickle.dump(rf_clf, f)
-    print("RandomForestClassifier model saved.")
-    
-    # # RandomForestRegressor
-    # print("Training RandomForestRegressor...")
-    # rf_reg = RandomForestRegressor(n_estimators=100, random_state=42)
-    # rf_reg.fit(X_train, y_train)  # Use encoded labels
-    # y_pred_reg = rf_reg.predict(X_test)
-    # mse = mean_squared_error(y_test, y_pred_reg)
-    # results['RandomForestRegressor MSE'] = mse
-    # print(f"RandomForestRegressor MSE: {mse:.2f}")
-    # with open(os.path.join(MODEL_SAVE_PATH, "random_forest_regressor.pkl"), 'wb') as f:
-    #     pickle.dump(rf_reg, f)
-    # print("RandomForestRegressor model saved.")
-    
-    # LSTM Model
-    print("Training LSTM model...")
-    X_train_reshaped = X_train.values.reshape((X_train.shape[0], X_train.shape[1], 1))
-    X_test_reshaped = X_test.values.reshape((X_test.shape[0], X_test.shape[1], 1))
-    lstm_model = Sequential([
-        LSTM(64, input_shape=(X_train_reshaped.shape[1], 1), activation='relu'),
-        Dense(len(le.classes_), activation='softmax')
-    ])
-    lstm_model.compile(optimizer=Adam(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    lstm_model.fit(X_train_reshaped, y_train, epochs=10, batch_size=32, validation_split=0.2)
-    loss, lstm_accuracy = lstm_model.evaluate(X_test_reshaped, y_test)
-    results['LSTM'] = lstm_accuracy
-    print(f"LSTM Accuracy: {lstm_accuracy:.2f}")
-    lstm_model.save(os.path.join(MODEL_SAVE_PATH, "lstm_model.h5"))
-    print("LSTM model saved.")
-    
-    # GRU Model
-    print("Training GRU model...")
-    gru_model = Sequential([
-        GRU(64, input_shape=(X_train_reshaped.shape[1], 1), activation='relu'),
-        Dense(len(le.classes_), activation='softmax')
-    ])
-    gru_model.compile(optimizer=Adam(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    gru_model.fit(X_train_reshaped, y_train, epochs=10, batch_size=32, validation_split=0.2)
-    loss, gru_accuracy = gru_model.evaluate(X_test_reshaped, y_test)
-    results['GRU'] = gru_accuracy
-    print(f"GRU Accuracy: {gru_accuracy:.2f}")
-    gru_model.save(os.path.join(MODEL_SAVE_PATH, "gru_model.h5"))
-    print("GRU model saved.")
-    
-    # 1D CNN Model
-    print("Training 1D CNN model...")
-    cnn_model = Sequential([
-        Conv1D(64, 2, activation='relu', input_shape=(X_train_reshaped.shape[1], 1)),
-        MaxPooling1D(2),
-        Flatten(),
-        Dense(len(le.classes_), activation='softmax')
-    ])
-    cnn_model.compile(optimizer=Adam(), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    cnn_model.fit(X_train_reshaped, y_train, epochs=10, batch_size=32, validation_split=0.2)
-    loss, cnn_accuracy = cnn_model.evaluate(X_test_reshaped, y_test)
-    results['1D CNN'] = cnn_accuracy
-    print(f"1D CNN Accuracy: {cnn_accuracy:.2f}")
-    cnn_model.save(os.path.join(MODEL_SAVE_PATH, "cnn_model.h5"))
-    print("1D CNN model saved.")
-    
-    # Print summary of results
-    print("\nTraining Summary:")
-    for model_name, metric in results.items():
-        print(f"{model_name}: {metric:.2f}")
+# แบ่งข้อมูลเป็น training และ testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
 
-# Main execution
-if __name__ == "__main__":
-    X, y = load_and_prepare_data(CSV_FOLDER)
-    train_and_save_models(X, y)
-    print("Training process complete.")
+# Normalize ข้อมูล
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Reshape ข้อมูลสำหรับ LSTM (samples, time steps, features)
+X_train_reshaped = X_train_scaled.reshape((X_train_scaled.shape[0], 1, X_train_scaled.shape[1]))
+X_test_reshaped = X_test_scaled.reshape((X_test_scaled.shape[0], 1, X_test_scaled.shape[1]))
+
+# แปลง labels เป็น one-hot encoding
+y_train_cat = to_categorical(y_train)
+y_test_cat = to_categorical(y_test)
+
+# สร้างโมเดล LSTM
+model = Sequential([
+    LSTM(100, input_shape=(1, X_train_reshaped.shape[2]), return_sequences=True),
+    Dropout(0.2),
+    LSTM(50),
+    Dropout(0.2),
+    Dense(len(le.classes_), activation='softmax')
+])
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# เทรนโมเดล
+history = model.fit(X_train_reshaped, y_train_cat, epochs=50, batch_size=32, 
+                    validation_data=(X_test_reshaped, y_test_cat), verbose=1)
+
+# บันทึกโมเดล
+if not os.path.exists(MODEL_SAVE_PATH):
+    os.makedirs(MODEL_SAVE_PATH)
+model.save(os.path.join(MODEL_SAVE_PATH, 'lstm_golf_swing_model.h5'))
+
+# ประเมินโมเดล
+test_loss, test_accuracy = model.evaluate(X_test_reshaped, y_test_cat, verbose=0)
+print(f"Test accuracy: {test_accuracy:.4f}")
+
+# บันทึก Label Encoder
+import joblib
+joblib.dump(le, os.path.join(MODEL_SAVE_PATH, 'label_encoder.joblib'))
+
+# บันทึก Scaler
+joblib.dump(scaler, os.path.join(MODEL_SAVE_PATH, 'scaler.joblib'))
