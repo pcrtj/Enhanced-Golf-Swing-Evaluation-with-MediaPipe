@@ -1,4 +1,2 @@
 *.pkl
-*.joblib
-*.h5
 node_modules/
