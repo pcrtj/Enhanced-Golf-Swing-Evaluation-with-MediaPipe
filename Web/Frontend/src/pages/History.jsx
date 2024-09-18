@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import '../css/History.css';
 
@@ -8,9 +8,10 @@ const CircularProgress = ({ value }) => {
   const strokeDashoffset = circumference - (value / 100) * circumference;
 
   const getColor = (value) => {
-    if (value < 31) return '#FF0000';
-    if (value < 61) return '#FFFF00';
-    return '#00FF00';
+    if (value < 26) return '#EB4343';
+    if (value < 51) return '#FF9933';
+    if (value < 76) return '#FFFF33';
+    return '#99FF00';
   };
 
   return (
@@ -81,7 +82,7 @@ const HistoryTable = () => {
         throw new Error("Oops! We haven't received a valid JSON response from the server.");
       }
       const data = await response.json();
-      console.log('Fetched history data:', data); // For debugging
+      console.log('Fetched history data:', data);
       setHistoryData(data);
     } catch (error) {
       console.error('Error fetching history data:', error);
@@ -104,10 +105,11 @@ const HistoryTable = () => {
   const swingPhases = ['A', 'TU', 'MB', 'T', 'MD', 'I', 'MFT', 'F'];
 
   const getBarColor = (value) => {
-    if (value < 31) return '#FF0000';
-    if (value < 61) return '#FFFF00';
-    return '#00FF00';
-  };
+    if (value < 26) return '#EB4343';
+    if (value < 51) return '#FF9933';
+    if (value < 76) return '#FFFF66';
+    return '#99FF00';
+};
 
   const renderTableRows = () => {
     if (historyData.length === 0) {
@@ -123,13 +125,11 @@ const HistoryTable = () => {
         <td>
           <video width="200" controls>
             <source src={item.inputClip} type="video/mp4" />
-            Your browser does not support the video tag.
           </video>
         </td>
         <td>
           <video width="200" controls>
             <source src={item.outputClip} type="video/mp4" />
-            Your browser does not support the video tag.
           </video>
         </td>
         <td>
