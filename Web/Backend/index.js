@@ -11,7 +11,6 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '500mb' }));
 
-// Database connection
 const db = mysql.createConnection({
     user: 'root',
     host: 'localhost',
@@ -27,7 +26,6 @@ db.connect(err => {
     console.log('Connected to the database successfully');
 });
 
-// Configure multer for handling file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const { username } = req.body;
@@ -118,7 +116,7 @@ app.post('/signup', (req, res) => {
     });
 });
 
-app.post('/api/upload', upload.single('video'), (req, res) => {
+app.post('/upload', upload.single('video'), (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded.');
     }
@@ -197,48 +195,75 @@ app.post('/api/upload', upload.single('video'), (req, res) => {
     });
 });
 
-app.get('/api/history', (req, res) => {
+app.get('/history', (req, res) => {
     const username = req.query.username;
+    const page = parseInt(req.query.page) || 1;
+    const rowsPerPage = 4; // Adjust this value as needed
+
+    console.log(`Fetching history for username: ${username}, page: ${page}`);
+
+    if (!username) {
+        console.error('Username not provided');
+        return res.status(400).json({ error: 'Username is required' });
+    }
 
     db.query('SELECT U_ID FROM `user` WHERE U_Username = ?', [username], (error, results) => {
         if (error) {
-            console.error('Error querying database:', error);
-            return res.status(500).send('Internal Server Error');
+            console.error('Error querying user:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
 
         if (results.length === 0) {
-            return res.status(404).send('User not found');
+            console.error(`User not found: ${username}`);
+            return res.status(404).json({ error: 'User not found' });
         }
 
         const U_ID = results[0].U_ID;
+        console.log(`Found U_ID: ${U_ID} for username: ${username}`);
 
         const sql = `
             SELECT 
                 E_ID,
-                EDateTime AS DateTime,
-                EVideoBefore AS InputClip,
-                EVideoAfter AS OutputClip,
-                EAccuracy AS Accuracy, 
-                EAvgAccuracy AS AverageAccuracy
+                E_DateTime AS date,
+                E_VideoBefore AS inputClip,
+                E_VideoAfter AS outputClip,
+                E_Score AS accuracy,
+                E_AvgScore AS avgAccuracy
             FROM 
                 event
             WHERE
                 U_ID = ?
             ORDER BY 
-                EDateTime DESC
-            LIMIT 6 OFFSET ?;
+                E_DateTime DESC
+            LIMIT ? OFFSET ?;
         `;
 
-        const page = parseInt(req.query.page) || 1;
-        const offset = (page - 1) * 6;
+        const offset = (page - 1) * rowsPerPage;
 
-        db.query(sql, [U_ID, offset], (err, results) => {
+        db.query(sql, [U_ID, rowsPerPage, offset], (err, results) => {
             if (err) {
                 console.error('Error fetching history data:', err);
-                return res.status(500).send('Internal Server Error');
+                return res.status(500).json({ error: 'Error fetching history data', details: err.message });
             }
 
-            res.status(200).json(results);
+            console.log(`Raw results:`, results);
+
+            try {
+                // Process the results to parse the accuracy JSON string if necessary
+                const processedResults = results.map(result => ({
+                    ...result,
+                    accuracy: typeof result.accuracy === 'string' ? JSON.parse(result.accuracy) : result.accuracy,
+                    date: new Date(result.date).toLocaleString() // Format the date
+                }));
+
+                console.log(`Processed results:`, processedResults);
+
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).json(processedResults);
+            } catch (parseError) {
+                console.error('Error processing results:', parseError);
+                res.status(500).json({ error: 'Error processing history data', details: parseError.message });
+            }
         });
     });
 });

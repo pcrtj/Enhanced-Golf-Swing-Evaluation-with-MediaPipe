@@ -127,3 +127,10 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  .nodata {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
