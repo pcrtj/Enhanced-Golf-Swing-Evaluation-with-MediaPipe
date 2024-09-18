@@ -13,11 +13,9 @@
 # import joblib
 # from tqdm import tqdm
 
-# # กำหนด path
 # CSV_FOLDER = "./output/videos_raw/csv/combined/realtime"
 # MODEL_SAVE_PATH = "./output/videos_raw/model/combined/realtime/feature correlation/compare model"
 
-# # สร้าง custom callback สำหรับ tqdm
 # class TqdmProgressCallback(Callback):
 #     def __init__(self, epochs):
 #         super().__init__()
@@ -29,20 +27,18 @@
 #     def on_train_end(self, logs=None):
 #         self.progress_bar.close()
 
-# # ฟังก์ชันสำหรับโหลดและเตรียมข้อมูล
 # def load_and_prepare_data(csv_folder):
 #     all_data = []
 #     for filename in os.listdir(csv_folder):
 #         if filename.endswith('.csv'):
 #             df = pd.read_csv(os.path.join(csv_folder, filename))
             
-#             # แยก x, y coordinates
 #             for joint in ['Left Wrist', 'Right Wrist', 'Left Ankle', 'Right Ankle', 'Left Shoulder', 'Right Shoulder', 'Left Elbow', 'Right Elbow',
 #                           'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee']:
 #                 df[[f'{joint} x', f'{joint} y']] = df[f'x, y {joint}'].str.split(', ', expand=True).astype(float)
             
 #             all_data.append(df)
-    
+
 #     combined_data = pd.concat(all_data, ignore_index=True)
     
 #     feature_columns = [
@@ -70,45 +66,36 @@
     
 #     return X, y
 
-# # โหลดและเตรียมข้อมูล
 # X, y = load_and_prepare_data(CSV_FOLDER)
 
-# # แปลง labels เป็นตัวเลข
 # le = LabelEncoder()
 # y_encoded = le.fit_transform(y)
 
-# # แบ่งข้อมูลเป็น training และ testing sets
 # X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
 
-# # Normalize ข้อมูล
 # scaler = StandardScaler()
 # X_train_scaled = scaler.fit_transform(X_train)
 # X_test_scaled = scaler.transform(X_test)
 
-# # เก็บผลลัพธ์ accuracy
 # results = {}
 
-# # สร้างและเทรนโมเดล Decision Tree
 # print("Training Decision Tree model...")
 # dt_model = DecisionTreeClassifier(random_state=42)
 # dt_model.fit(X_train_scaled, y_train)
 # dt_accuracy = dt_model.score(X_test_scaled, y_test)
 # results['Decision Tree'] = dt_accuracy
 
-# # สร้างและเทรนโมเดล Random Forest
 # print("Training Random Forest model...")
 # rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
 # rf_model.fit(X_train_scaled, y_train)
 # rf_accuracy = rf_model.score(X_test_scaled, y_test)
 # results['Random Forest'] = rf_accuracy
 
-# # เตรียมข้อมูลสำหรับโมเดล Deep Learning
 # X_train_reshaped = X_train_scaled.reshape((X_train_scaled.shape[0], 1, X_train_scaled.shape[1]))
 # X_test_reshaped = X_test_scaled.reshape((X_test_scaled.shape[0], 1, X_test_scaled.shape[1]))
 # y_train_cat = to_categorical(y_train)
 # y_test_cat = to_categorical(y_test)
 
-# # ฟังก์ชันสำหรับสร้างและเทรนโมเดล Deep Learning
 # def train_dl_model(model, model_name, epochs=50, batch_size=32):
 #     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 #     print(f"Training {model_name} model...")
@@ -120,7 +107,6 @@
 #     results[model_name] = test_accuracy
 #     return model, history
 
-# # สร้างและเทรนโมเดล LSTM
 # lstm_model = Sequential([
 #     LSTM(100, input_shape=(1, X_train_reshaped.shape[2]), return_sequences=True),
 #     Dropout(0.2),
@@ -130,7 +116,6 @@
 # ])
 # lstm_model, lstm_history = train_dl_model(lstm_model, "LSTM")
 
-# # สร้างและเทรนโมเดล GRU
 # gru_model = Sequential([
 #     GRU(100, input_shape=(1, X_train_reshaped.shape[2]), return_sequences=True),
 #     Dropout(0.2),
@@ -140,7 +125,6 @@
 # ])
 # gru_model, gru_history = train_dl_model(gru_model, "GRU")
 
-# # สร้างและเทรนโมเดล 1D CNN
 # cnn_model = Sequential([
 #     Conv1D(filters=64, kernel_size=1, activation='relu', input_shape=(1, X_train_reshaped.shape[2])),
 #     Flatten(),
@@ -150,7 +134,6 @@
 # ])
 # cnn_model, cnn_history = train_dl_model(cnn_model, "1D CNN")
 
-# # บันทึกโมเดลและข้อมูลที่เกี่ยวข้อง
 # if not os.path.exists(MODEL_SAVE_PATH):
 #     os.makedirs(MODEL_SAVE_PATH)
 
@@ -164,7 +147,6 @@
 
 # print("\nAll models have been trained and saved successfully.")
 
-# # แสดงผลสรุป accuracy
 # print("\nModel Accuracy Summary:")
 # for model, accuracy in results.items():
 #     print(f"{model}: {accuracy:.4f}")

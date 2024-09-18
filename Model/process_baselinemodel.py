@@ -5,23 +5,18 @@ import tensorflow as tf
 from sklearn.preprocessing import StandardScaler
 import joblib
 
-# กำหนด paths
 INPUT_CSV_PATH = './output/baseline/combined/adjusted/realtime/hpe/csv'
 MODEL_SAVE_PATH = "./output/videos_raw/model/combined/realtime/feature correlation/epoch 50/"
 OUTPUT_PATH = "./output/baseline/combined/adjusted/realtime/hpe/csv_aftermodel/predictions/feature correlation/epoch 50"
 
-# โหลดโมเดล
 model = tf.keras.models.load_model(os.path.join(MODEL_SAVE_PATH, 'lstm_golf_swing_model.h5'))
 
-# โหลด Label Encoder และ Scaler
 le = joblib.load(os.path.join(MODEL_SAVE_PATH, 'label_encoder.joblib'))
 scaler = joblib.load(os.path.join(MODEL_SAVE_PATH, 'scaler.joblib'))
 
-# ฟังก์ชันสำหรับเตรียมข้อมูล
 def prepare_data(df):
-    # แยก x, y coordinates
-    for joint in ['Left Wrist', 'Right Wrist', 'Left Ankle', 'Right Ankle', 'Left Shoulder', 'Right Shoulder', 'Left Elbow', 'Right Elbow',
-                          'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee']:
+    for joint in ['Left Wrist', 'Right Wrist', 'Left Ankle', 'Right Ankle', 'Left Shoulder', 'Right Shoulder', 
+                  'Left Elbow', 'Right Elbow', 'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee']:
                 df[[f'{joint} x', f'{joint} y']] = df[f'x, y {joint}'].str.split(', ', expand=True).astype(float)
     
     feature_columns = [
@@ -46,7 +41,6 @@ def prepare_data(df):
     
     return df[feature_columns].values
 
-# ฟังก์ชันสำหรับทำนาย
 def predict_poses(file_path):
     df = pd.read_csv(file_path)
     X = prepare_data(df)
@@ -60,11 +54,9 @@ def predict_poses(file_path):
     df['Predicted_Pose'] = predicted_labels
     return df
 
-# สร้างโฟลเดอร์สำหรับเก็บผลลัพธ์
 if not os.path.exists(OUTPUT_PATH):
     os.makedirs(OUTPUT_PATH)
 
-# ทำนายสำหรับทุกไฟล์ CSV ในโฟลเดอร์ input
 for filename in os.listdir(INPUT_CSV_PATH):
     if filename.endswith('.csv'):
         input_file_path = os.path.join(INPUT_CSV_PATH, filename)

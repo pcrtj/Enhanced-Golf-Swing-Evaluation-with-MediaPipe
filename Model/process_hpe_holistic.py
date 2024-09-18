@@ -4,7 +4,6 @@ import numpy as np
 import os
 import csv
 
-
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
@@ -25,10 +24,7 @@ def calculate_angle(a, b, c):
     
     radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
     angle = np.abs(radians * 180.0 / np.pi)
-    
-    # if angle > 180.0:
-    #     angle = 360 - angle
-        
+     
     return angle
 
 def process_video(video_path, output_path, csv_folder):
@@ -66,8 +62,7 @@ def process_video(video_path, output_path, csv_folder):
                     break
                 
                 image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                results = holistic.process(image)
-                
+                results = holistic.process(image)               
                 if results.pose_landmarks:
                     landmarks = results.pose_landmarks.landmark
                     
@@ -139,14 +134,9 @@ def process_video(video_path, output_path, csv_folder):
     cap.release()
     out.release()
 
-
-
-
 video_files = [f for f in os.listdir(input_folder) if f.endswith('.mp4')]
-# start_idx = video_files.index('0.mp4')
 
 for idx, video_file in enumerate(video_files):
-    # print(f"Processing video {idx + 1}/{len(video_files) - start_idx}: {video_file}")
     print(f"Processing video {idx + 1}/{len(video_files)}: {video_file}")
     video_path = os.path.join(input_folder, video_file)
     output_path = os.path.join(output_folder, f'hpe_{video_file}')
