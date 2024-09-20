@@ -1,12 +1,11 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
-const jwt = require('jsonwebtoken');
 const multer = require('multer');
-const { spawn } = require('child_process');
+const axios = require('axios');
 const app = express();
+const fs = require('fs').promises; // Use promises version of fs
+const path = require('path');
 
 app.use(cors());
 app.use(express.json({ limit: '500mb' }));
@@ -55,7 +54,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Serve static files from the uploads directory
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.get('/', (req, res) => {
@@ -86,8 +85,6 @@ app.post('/login', (req, res) => {
     });
 });
 
-
-
 app.post('/signup', (req, res) => {
     const { username, password } = req.body;
     
@@ -116,84 +113,83 @@ app.post('/signup', (req, res) => {
     });
 });
 
-app.post('/upload', upload.single('video'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).send('No file uploaded.');
+app.post('/upload', (req, res) => {
+    const username = req.body.username;
+    const video = req.file; // ตรวจสอบว่ามีไฟล์ถูกส่งมา
+
+    // ตรวจสอบว่ามี username และไฟล์วิดีโอถูกส่งมาหรือไม่
+    if (!username || !video) {
+        return res.status(400).json({ message: "Username and video are required" });
     }
 
-    const { username, startTime, endTime } = req.body;
-    const inputVideoPath = req.file.path;
-
-    db.query('SELECT U_ID FROM `user` WHERE U_Username = ?', [username], (error, results) => {
+    // ตรวจสอบว่าพบผู้ใช้หรือไม่
+    const query = 'SELECT * FROM users WHERE username = ?';
+    connection.query(query, [username], (error, results) => {
         if (error) {
-            console.error('Error querying database:', error);
-            return res.status(500).send('Internal Server Error');
+            console.error("Database error: ", error);
+            return res.status(500).json({ message: "Database error" });
         }
 
         if (results.length === 0) {
-            return res.status(404).send('User not found');
+            return res.status(404).json({ message: "User not found" });
         }
 
-        const U_ID = results[0].U_ID;
-
-        // Call Python script to process video
-        const pythonProcess = spawn('python', ['video_processor.py', inputVideoPath, startTime, endTime]);
-
-        let pythonData = '';
-        pythonProcess.stdout.on('data', (data) => {
-            pythonData += data.toString();
-        });
-
-        pythonProcess.on('close', (code) => {
-            if (code !== 0) {
-                return res.status(500).send('Error processing video');
-            }
-
-            const processedData = JSON.parse(pythonData);
-
-            // Insert event and get E_ID
-            const { accuracy, avgAccuracy } = processedData;
-            const sql = 'INSERT INTO event (U_ID, EAccuracy, EAvgAccuracy, EDateTime) VALUES (?, ?, ?, NOW())';
-            db.query(sql, [U_ID, JSON.stringify(accuracy), avgAccuracy], (error, result) => {
-                if (error) {
-                    console.error('Error saving to database:', error);
-                    return res.status(500).send('Error saving results');
-                }
-
-                const E_ID = result.insertId;
-
-                // Create E_ID folder
-                const eventDir = path.join(`./uploads/${U_ID}`, E_ID.toString());
-                fs.mkdirSync(eventDir, { recursive: true });
-
-                // Move input video to E_ID folder
-                const newInputPath = path.join(eventDir, 'input' + path.extname(inputVideoPath));
-                fs.renameSync(inputVideoPath, newInputPath);
-
-                // Assume the Python script saves the processed video and returns its path
-                const outputVideoPath = processedData.outputVideoPath;
-                const newOutputPath = path.join(eventDir, 'output' + path.extname(outputVideoPath));
-                fs.renameSync(outputVideoPath, newOutputPath);
-
-                // Update event with video paths
-                const updateSql = 'UPDATE event SET EVideoBefore = ?, EVideoAfter = ? WHERE E_ID = ?';
-                db.query(updateSql, [newInputPath, newOutputPath, E_ID], (updateError) => {
-                    if (updateError) {
-                        console.error('Error updating event:', updateError);
-                        return res.status(500).send('Error updating event');
-                    }
-
-                    res.json({
-                        ...processedData,
-                        E_ID,
-                        inputVideoPath: newInputPath,
-                        outputVideoPath: newOutputPath
-                    });
-                });
-            });
-        });
+        // ดำเนินการต่อหลังจากพบผู้ใช้และไฟล์ถูกต้อง
+        // ...
     });
 });
+
+app.post('/save-result', async (req, res) => {
+    try {
+        const { username, temp_folder, input_video, output_video, similarities, average_similarity } = req.body;
+
+        // Get U_ID from username
+        const [userResults] = await db.promise().query('SELECT U_ID FROM `user` WHERE U_Username = ?', [username]);
+        
+        if (userResults.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const U_ID = userResults[0].U_ID;
+
+        // Insert into event table and get the auto-generated E_ID
+        const [result] = await db.promise().query(
+            'INSERT INTO event (U_ID, E_DateTime, E_VideoBefore, E_VideoAfter, E_Score, E_AvgScore) VALUES (?, NOW(), ?, ?, ?, ?)',
+            [U_ID, input_video, output_video, JSON.stringify(similarities), average_similarity]
+        );
+
+        const E_ID = result.insertId;
+
+        // Create new folder with E_ID
+        const eventFolder = path.join(__dirname, 'uploads', E_ID.toString());
+        await fs.mkdir(eventFolder, { recursive: true });
+
+        // Move files from temp folder to E_ID folder
+        const filesToMove = ['input_golf.mp4', 'output_golf.mp4', 'data.csv', 'predicted_data.csv', 'adjusted_golf.mp4'];
+        for (const file of filesToMove) {
+            const oldPath = path.join(temp_folder, file);
+            const newPath = path.join(eventFolder, file);
+            if (await fs.stat(oldPath).catch(() => false)) {
+                await fs.rename(oldPath, newPath);
+            }
+        }
+
+        // Remove temp folder
+        await fs.rm(temp_folder, { recursive: true, force: true }).catch(console.error);
+
+        // Update file paths in database
+        await db.promise().query(
+            'UPDATE event SET E_VideoBefore = ?, E_VideoAfter = ? WHERE E_ID = ?',
+            [path.join(E_ID.toString(), 'input_golf.mp4'), path.join(E_ID.toString(), 'output_golf.mp4'), E_ID]
+        );
+
+        res.status(200).json({ message: 'Event saved successfully', E_ID: E_ID });
+    } catch (error) {
+        console.error('Error in save-result:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message });
+    }
+});
+
 
 app.get('/history', (req, res) => {
     const username = req.query.username;

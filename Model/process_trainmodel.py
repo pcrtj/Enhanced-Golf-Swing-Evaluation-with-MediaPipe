@@ -163,7 +163,7 @@ from tensorflow.keras.utils import to_categorical
 
 # กำหนด path
 CSV_FOLDER = "./output/videos_raw/csv/combined/realtime"
-MODEL_SAVE_PATH = "./output/videos_raw/model/combined/realtime/feature correlation/epoch 50/"
+MODEL_SAVE_PATH = "./output/videos_raw/model/combined/realtime/feature correlation/epoch 30"
 
 # ฟังก์ชันสำหรับโหลดและเตรียมข้อมูล
 def load_and_prepare_data(csv_folder):
@@ -241,7 +241,7 @@ model = Sequential([
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 # เทรนโมเดล
-history = model.fit(X_train_reshaped, y_train_cat, epochs=50, batch_size=32, 
+history = model.fit(X_train_reshaped, y_train_cat, epochs=30, batch_size=32, 
                     validation_data=(X_test_reshaped, y_test_cat), verbose=1)
 
 # บันทึกโมเดล

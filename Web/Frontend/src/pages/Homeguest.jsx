@@ -24,11 +24,11 @@ const HomeGuest = () => {
       <LenisScroll />
       <div className="homepage">
         <div className="content">
-          <h1 className='headerhome'>
             <BoxReveal boxColor={"rgba(64, 83, 76, 0.8)"} duration={0.5}>
-              Enhanced Golf Swing Evaluation <mark>with MediaPipe</mark>
+              <h1 className='headerhomeguest'>
+                  Enhanced Golf Swing Evaluation <mark>with MediaPipe</mark>
+              </h1>
             </BoxReveal>
-          </h1>
             <BoxReveal boxColor={"rgba(64, 83, 76, 0.8)"} duration={0.5}>
               <p className='content'>
                 Wireless Ad-Hoc and Sensor Networks Laboratory, <br></br>Department of Computer Science and Information Engineering, <br></br>National Central University, Taiwan

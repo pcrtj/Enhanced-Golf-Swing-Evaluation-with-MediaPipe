@@ -328,4 +328,301 @@ button.back-button {
     transform: translateY(-3px);
   }
 
+  .result-container {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+  }
   
+  .video-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  
+  .similarity-results {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  /* Add this to your existing CSS file */
+
+/* From Uiverse.io by mobinkakei */ 
+.wrapper {
+  width: 200px;
+  height: 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.circle {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  border-radius: 50%;
+  background-color: #fff;
+  left: 15%;
+  transform-origin: 50%;
+  animation: circle7124 .5s alternate infinite ease;
+}
+
+@keyframes circle7124 {
+  0% {
+    top: 60px;
+    height: 5px;
+    border-radius: 50px 50px 25px 25px;
+    transform: scaleX(1.7);
+  }
+
+  40% {
+    height: 20px;
+    border-radius: 50%;
+    transform: scaleX(1);
+  }
+
+  100% {
+    top: 0%;
+  }
+}
+
+.circle:nth-child(2) {
+  left: 45%;
+  animation-delay: .2s;
+}
+
+.circle:nth-child(3) {
+  left: auto;
+  right: 15%;
+  animation-delay: .3s;
+}
+
+.shadow {
+  width: 20px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: rgba(0,0,0,0.9);
+  position: absolute;
+  top: 62px;
+  transform-origin: 50%;
+  z-index: -1;
+  left: 15%;
+  filter: blur(1px);
+  animation: shadow046 .5s alternate infinite ease;
+}
+
+@keyframes shadow046 {
+  0% {
+    transform: scaleX(1.5);
+  }
+
+  40% {
+    transform: scaleX(1);
+    opacity: .7;
+  }
+
+  100% {
+    transform: scaleX(.2);
+    opacity: .4;
+  }
+}
+
+.shadow:nth-child(4) {
+  left: 45%;
+  animation-delay: .2s
+}
+
+.shadow:nth-child(5) {
+  left: auto;
+  right: 15%;
+  animation-delay: .3s;
+}
+
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.result-popup {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+}
+
+/* Your existing wrapper, circle, and shadow styles go here */
+
+.result-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.result-popup-content {
+  background-color: rgba(103, 125, 106, 1);
+  padding: 20px;
+  border-radius: 20px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.result-title {
+  margin-bottom: 20px;
+}
+
+.video-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.video-item {
+  flex: 1;
+  max-width: 400px;
+}
+
+.video-item video {
+  width: 100%;
+  max-width: 400px;
+}
+
+.similarity-results {
+  margin-top: 20px;
+  width: 100%;
+  margin-bottom: 25px;
+  background-color: rgb(135 159 138);
+
+}
+
+.similarity-results h3 {
+  margin-bottom: 10px;
+}
+
+.similarity-results p {
+  margin: 5px 0;
+}
+
+.average-similarity {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+button.result-close-button {
+  font-family: Arial, Helvetica, sans-serif;
+  width: 150px;
+  padding: 1.3em 3em;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #f44336;
+  box-shadow: 0px 15px 20px rgba(247, 52, 26, 0.459);
+  border: none;
+  border-radius: 45px;
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+  outline: none;
+  margin-right: -20px;
+}
+
+button.result-close-button:hover {
+  font-family: Arial, Helvetica, sans-serif;  
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #f44336;
+  box-shadow: 0px 15px 20px rgba(247, 52, 26, 0.459);
+  color: #fff;
+  transform: translateY(-3px);
+  
+}
+
+.headerresult {
+  font-size: 36px;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+  text-transform: uppercase;
+  color: #fff;
+  z-index: 1;
+  position: relative;
+  line-height: 1.3;
+}
+
+.resultinfo-header {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: bold;
+  font-weight: 800;
+  font-style: normal;
+  text-transform: uppercase;
+  background:rgba(255, 255, 255);
+  color: rgb(40, 196, 105);
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.resultinfo {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: bold;
+  font-weight: 800;
+  font-style: normal;
+  text-transform: uppercase;
+  background:rgba(255, 255, 255);
+  color: rgb(40, 196, 105);
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+
+
+.info{
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: bold;
+  font-weight: 600;
+  font-style: normal;
+  text-transform: uppercase;
+  color: #fff;
+  transition: all 0.3s ease 0s;
+}
+
+.info:hover {
+  background:rgba(255, 255, 255);
+  color: rgb(40, 196, 105);
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+h4.resultinfo{
+  margin-top: 10px;
+}
