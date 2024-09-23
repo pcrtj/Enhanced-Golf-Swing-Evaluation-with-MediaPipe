@@ -8,9 +8,9 @@ const CircularProgress = ({ value }) => {
   const strokeDashoffset = circumference - (value / 100) * circumference;
 
   const getColor = (value) => {
-    if (value < 26) return '#EB4343';
-    if (value < 51) return '#FF9933';
-    if (value < 76) return '#FFFF33';
+    if (value < 61) return '#EB4343';
+    if (value < 71) return '#FF9933';
+    if (value < 81) return '#FFFF33';
     return '#99FF00';
   };
 
@@ -105,9 +105,9 @@ const HistoryTable = () => {
   const swingPhases = ['A', 'TU', 'MB', 'T', 'MD', 'I', 'MFT', 'F'];
 
   const getBarColor = (value) => {
-    if (value < 26) return '#EB4343';
-    if (value < 51) return '#FF9933';
-    if (value < 76) return '#FFFF66';
+    if (value < 61) return '#EB4343';
+    if (value < 71) return '#FF9933';
+    if (value < 81) return '#FFFF33';
     return '#99FF00';
 };
 

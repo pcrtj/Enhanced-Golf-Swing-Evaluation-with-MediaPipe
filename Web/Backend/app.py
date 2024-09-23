@@ -14,7 +14,9 @@ import json
 import time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
+import numpy as np
+from scipy.spatial.distance import euclidean
+from fastdtw import fastdtw
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
@@ -223,10 +225,29 @@ def load_data(file_path):
 def split_data_by_pose(data):
     return {pose: data[data['Predicted_Pose'] == pose].drop('Predicted_Pose', axis=1) for pose in poses}
 
-def calculate_similarity(baseline, user):
+def calculate_manhattan_similarity(baseline, user):
     if baseline.empty or user.empty:
         return None
-    return cosine_similarity(baseline.mean().values.reshape(1, -1), user.mean().values.reshape(1, -1))[0][0]
+    manhattan_distance = np.sum(np.abs(baseline.mean() - user.mean()))
+    max_possible_distance = len(baseline.columns) * 180  # ปรับเป็น 360 องศา
+    similarity = 1 - (manhattan_distance / max_possible_distance)
+    return similarity
+
+def calculate_dtw_similarity(baseline, user):
+    if baseline.empty or user.empty:
+        return None
+    
+    # แปลงข้อมูลเป็น numpy array
+    baseline_array = baseline.values
+    user_array = user.values
+    
+    # คำนวณ DTW distance
+    distance, _ = fastdtw(baseline_array, user_array, dist=euclidean)
+    
+    # คำนวณความคล้ายคลึง (คล้ายกับในบทความ แต่เราใช้ 1 / (1 + distance) เพื่อให้ค่าอยู่ระหว่าง 0 และ 1)
+    similarity = 1 / (1 + distance)
+    
+    return similarity
 
 def assess_similarity(user_csv_path):
     baseline_data = []
@@ -243,12 +264,13 @@ def assess_similarity(user_csv_path):
     similarities = {}
     for pose in poses:
         if pose in baseline_poses and pose in user_poses:
-            similarity = calculate_similarity(baseline_poses[pose], user_poses[pose])
+            similarity = calculate_dtw_similarity(baseline_poses[pose], user_poses[pose])
             if similarity is not None:
                 similarities[pose] = similarity
 
     if similarities:
-        average_similarity = np.mean(list(similarities.values()))
+        total_similarity = sum(similarities.values())
+        average_similarity = total_similarity / 8  # หารด้วย 8 ตามจำนวนท่าทั้งหมด
     else:
         average_similarity = None
 

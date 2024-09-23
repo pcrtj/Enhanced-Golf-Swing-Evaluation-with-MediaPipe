@@ -202,7 +202,7 @@ function UploadVideo() {
               </div>
             </div>
             <div className='footcontent'>
-              Please make sure your video <div className='subtextgreen'>starts with the Address</div> and <div className='subtextred'>ends with the Finish</div>.
+              Please make sure your video <div className='subtextgreen'>start with the Address</div> and <div className='subtextred'>end with the Finish</div>.
             </div>
             <button onClick={handleClosePopup} className='close-button'>
               continue
@@ -216,7 +216,7 @@ function UploadVideo() {
             <BoxReveal boxColor={"rgba(64, 83, 76, 0.8)"} duration={0.5}>
               <h1 className='headerhome'>Upload Your Video</h1>
               <p className='content'>
-                Please make sure your video <span className='subtextgreen'>starts with the Address</span> and <span className='subtextred'>ends with the Finish</span>.
+                Please make sure your video <span className='subtextgreen'>start with the Address</span> and <span className='subtextred'>end with the Finish</span>.
               </p>
             </BoxReveal>
             <div className="upload-input">
