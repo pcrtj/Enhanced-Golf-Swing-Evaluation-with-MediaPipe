@@ -52,7 +52,7 @@ def calculate_similarity(baseline, user):
         else:
             distances.append(0)
 
-    max_possible_distance = np.sqrt(len(angle_columns))  # Maximum possible distance in n-dimensional space
+    max_possible_distance = np.sqrt(len(angle_columns))
     similarities = [1 - (d / max_possible_distance) for d in distances]
 
     angle_similarities = {}

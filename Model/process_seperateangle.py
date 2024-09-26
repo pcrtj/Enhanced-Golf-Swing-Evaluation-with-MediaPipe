@@ -4,7 +4,7 @@ import pandas as pd
 
 # Path to the CSV file and video folder
 golfdb_path = './golfdb/data/GolfDB.csv'
-video_folder = './output/baseline/combined/adjusted/realtime/hpe/csv_aftermodel/predictions/feature correlation/epoch 30/'
+video_folder = './output/baseline/combined/adjusted/realtime/hpe/csv_aftermodel/predictions/feature correlation/epoch 50/'
 
 # Load the CSV file
 golfdb = pd.read_csv(golfdb_path)
