@@ -16,17 +16,18 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import numpy as np
 from scipy.spatial.distance import euclidean
-from fastdtw import fastdtw
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 
-# Constants
 UPLOAD_FOLDER = './uploads'
 PROCESSED_FOLDER = './uploads'
 CSV_FOLDER = './uploads'
 MODEL_SAVE_PATH = './model/epoch 30'
 BASELINE_FOLDER = './baseline/epoch 50/'
+FACE_ON_BASELINE_FOLDER = './baseline/epoch 30/face_on'
+DOWN_THE_LINE_BASELINE_FOLDER = './baseline/epoch 30/down_the_line'
 ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mov'}
 
 median_duration = 8.208208208208209
@@ -39,6 +40,9 @@ le = joblib.load(os.path.join(MODEL_SAVE_PATH, 'label_encoder.joblib'))
 scaler = joblib.load(os.path.join(MODEL_SAVE_PATH, 'scaler.joblib'))
 
 poses = ['Address', 'Toe-Up', 'Mid-Backswing', 'Top', 'Mid-Downswing', 'Impact', 'Mid-Follow-Through', 'Finish']
+
+angle_columns = ['Left Shoulder Angle', 'Right Shoulder Angle', 'Left Elbow Angle', 'Right Elbow Angle',
+                     'Left Hip Angle', 'Right Hip Angle', 'Left Knee Angle', 'Right Knee Angle']
 
 def calculate_angle(a, b, c):
     a = np.array(a)
@@ -225,35 +229,47 @@ def load_data(file_path):
 def split_data_by_pose(data):
     return {pose: data[data['Predicted_Pose'] == pose].drop('Predicted_Pose', axis=1) for pose in poses}
 
-def calculate_manhattan_similarity(baseline, user):
+def calculate_similarity(baseline, user):
     if baseline.empty or user.empty:
-        return None
-    manhattan_distance = np.sum(np.abs(baseline.mean() - user.mean()))
-    max_possible_distance = len(baseline.columns) * 180  # ปรับเป็น 360 องศา
-    similarity = 1 - (manhattan_distance / max_possible_distance)
-    return similarity
+        return None, 0
+    
+    baseline_data = baseline[angle_columns].values
+    user_data = user[angle_columns].values
 
-def calculate_dtw_similarity(baseline, user):
-    if baseline.empty or user.empty:
-        return None
-    
-    # แปลงข้อมูลเป็น numpy array
-    baseline_array = baseline.values
-    user_array = user.values
-    
-    # คำนวณ DTW distance
-    distance, _ = fastdtw(baseline_array, user_array, dist=euclidean)
-    
-    # คำนวณความคล้ายคลึง (คล้ายกับในบทความ แต่เราใช้ 1 / (1 + distance) เพื่อให้ค่าอยู่ระหว่าง 0 และ 1)
-    similarity = 1 / (1 + distance)
-    
-    return similarity
+    def safe_normalize(data):
+        min_vals = np.min(data, axis=0)
+        max_vals = np.max(data, axis=0)
+        range_vals = max_vals - min_vals
+        range_vals[range_vals == 0] = 1
+        return (data - min_vals) / range_vals
 
-def assess_similarity(user_csv_path):
+    baseline_norm = safe_normalize(baseline_data)
+    user_norm = safe_normalize(user_data)
+
+    distances = []
+    for b, u in zip(baseline_norm, user_norm):
+        valid_indices = np.isfinite(b) & np.isfinite(u)
+        if np.any(valid_indices):
+            distances.append(euclidean(b[valid_indices], u[valid_indices]))
+        else:
+            distances.append(0)
+
+    max_possible_distance = np.sqrt(len(angle_columns))
+    similarities = [1 - (d / max_possible_distance) for d in distances]
+
+    angle_similarities = {}
+    for i, column in enumerate(angle_columns):
+        angle_similarities[column] = np.mean([1 - abs(b[i] - u[i]) for b, u in zip(baseline_norm, user_norm) if np.isfinite(b[i]) and np.isfinite(u[i])])
+
+    overall_similarity = np.mean(similarities)
+
+    return angle_similarities, overall_similarity
+
+def assess_similarity(baseline_folder, user_csv_path):
     baseline_data = []
-    for file in os.listdir(BASELINE_FOLDER):
+    for file in os.listdir(baseline_folder):
         if file.endswith('.csv'):
-            df = load_data(os.path.join(BASELINE_FOLDER, file))
+            df = load_data(os.path.join(baseline_folder, file))
             baseline_data.append(df)
 
     user_data = load_data(user_csv_path)
@@ -262,34 +278,27 @@ def assess_similarity(user_csv_path):
     user_poses = split_data_by_pose(user_data)
 
     similarities = {}
-    for pose in poses:
+    for pose in baseline_poses.keys():
         if pose in baseline_poses and pose in user_poses:
-            similarity = calculate_dtw_similarity(baseline_poses[pose], user_poses[pose])
-            if similarity is not None:
-                similarities[pose] = similarity
+            angle_similarities, overall_similarity = calculate_similarity(baseline_poses[pose], user_poses[pose])
+            similarities[pose] = (angle_similarities, overall_similarity)
 
-    if similarities:
-        total_similarity = sum(similarities.values())
-        average_similarity = total_similarity / 8  # หารด้วย 8 ตามจำนวนท่าทั้งหมด
-    else:
-        average_similarity = None
-
-    return similarities, average_similarity
+    return similarities
 
 def main(input_video_path):
-    # Create necessary folders
+    
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     os.makedirs(PROCESSED_FOLDER, exist_ok=True)
     os.makedirs(CSV_FOLDER, exist_ok=True)
 
-    # Generate output file paths
+    
     filename = os.path.basename(input_video_path)
     adjusted_path = os.path.join(UPLOAD_FOLDER, 'adjusted_' + filename)
     output_video_path = os.path.join(PROCESSED_FOLDER, 'processed_' + filename)
     csv_path = os.path.join(CSV_FOLDER, os.path.splitext(filename)[0] + '.csv')
     prediction_csv_path = os.path.join(CSV_FOLDER, 'predicted_' + os.path.basename(csv_path))
 
-    # Process the video
+
     print("Adjusting video duration...")
     adjust_video_duration(input_video_path, adjusted_path, median_duration)
     
@@ -303,7 +312,7 @@ def main(input_video_path):
     print("Assessing similarity...")
     similarities, average_similarity = assess_similarity(prediction_csv_path)
 
-    # Print results
+
     print("\nResults:")
     print(f"Input Video: {input_video_path}")
     print(f"Processed Video: {output_video_path}")
@@ -329,7 +338,6 @@ def process_video_api():
         if not username:
             return jsonify({'error': 'No username provided'}), 400
 
-        # Create a temporary folder for processing
         temp_folder = os.path.join(UPLOAD_FOLDER, 'temp_' + str(int(time.time())))
         os.makedirs(temp_folder, exist_ok=True)
 
@@ -341,16 +349,13 @@ def process_video_api():
         csv_path = os.path.join(temp_folder, 'data.csv')
         prediction_csv_path = os.path.join(temp_folder, 'predicted_data.csv')
 
-        # Process the video
         adjust_video_duration(input_path, adjusted_path, median_duration)
         process_video(adjusted_path, output_path, csv_path)
 
-        # Predict poses and assess similarity
         df_with_predictions = predict_poses(csv_path)
         df_with_predictions.to_csv(prediction_csv_path, index=False)
         similarities, average_similarity = assess_similarity(prediction_csv_path)
 
-        # Prepare the results for API response
         results = {
             'username': username,
             'temp_folder': temp_folder,
