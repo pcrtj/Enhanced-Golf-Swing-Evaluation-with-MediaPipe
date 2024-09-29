@@ -627,3 +627,45 @@ h2.headerresult {
 h4.resultinfo{
   margin-top: 10px;
 }
+
+.pose-similarities-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pose-similarity-item {
+  position: relative;
+}
+
+.custom-tooltip {
+  background-color: #1a4731 !important;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: bold;
+  font-weight: 600;
+  color: white !important;
+  border-radius: 4px !important;
+  padding: 10px !important;
+  font-size: 16px !important;
+}
+
+.tooltip-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tooltip-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.angle-name {
+  font-weight: bold;
+}
+
+.angle-value {
+  text-align: right;
+}

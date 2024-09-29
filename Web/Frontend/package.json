@@ -34,6 +34,7 @@
     "react-player": "^2.16.0",
     "react-responsive": "^10.0.0",
     "react-router-dom": "^6.26.1",
+    "react-tooltip": "^5.28.0",
     "react-transition-group": "^4.4.5",
     "recharts": "^2.12.7",
     "routes": "^2.1.0",

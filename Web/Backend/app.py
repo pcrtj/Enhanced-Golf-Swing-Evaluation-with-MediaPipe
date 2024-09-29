@@ -265,25 +265,54 @@ def calculate_similarity(baseline, user):
 
     return angle_similarities, overall_similarity
 
-def assess_similarity(baseline_folder, user_csv_path):
-    baseline_data = []
-    for file in os.listdir(baseline_folder):
-        if file.endswith('.csv'):
-            df = load_data(os.path.join(baseline_folder, file))
-            baseline_data.append(df)
+def assess_similarity(user_csv_path, face_on_folder=FACE_ON_BASELINE_FOLDER, down_the_line_folder=DOWN_THE_LINE_BASELINE_FOLDER):
+    def load_baseline_data(folder):
+        baseline_data = []
+        for file in os.listdir(folder):
+            if file.endswith('.csv'):
+                try:
+                    df = load_data(os.path.join(folder, file))
+                    baseline_data.append(df)
+                except Exception as e:
+                    print(f"Error loading baseline file {file} from {folder}: {e}")
+        return baseline_data
 
-    user_data = load_data(user_csv_path)
+    face_on_data = load_baseline_data(face_on_folder)
+    down_the_line_data = load_baseline_data(down_the_line_folder)
 
-    baseline_poses = split_data_by_pose(pd.concat(baseline_data))
-    user_poses = split_data_by_pose(user_data)
+    if not face_on_data and not down_the_line_data:
+        print(f"No baseline data found in {face_on_folder} or {down_the_line_folder}")
+        return {}
 
-    similarities = {}
-    for pose in baseline_poses.keys():
-        if pose in baseline_poses and pose in user_poses:
-            angle_similarities, overall_similarity = calculate_similarity(baseline_poses[pose], user_poses[pose])
-            similarities[pose] = (angle_similarities, overall_similarity)
+    try:
+        user_data = load_data(user_csv_path)
+    except Exception as e:
+        print(f"Error loading user data from {user_csv_path}: {e}")
+        return {}
 
-    return similarities
+    def process_baseline(baseline_data):
+        if not baseline_data:
+            return {}
+        baseline_poses = split_data_by_pose(pd.concat(baseline_data))
+        user_poses = split_data_by_pose(user_data)
+        similarities = {}
+        for pose in poses:
+            if pose in baseline_poses and pose in user_poses:
+                angle_similarities, overall_similarity = calculate_similarity(baseline_poses[pose], user_poses[pose])
+                similarities[pose] = (angle_similarities, overall_similarity)
+        return similarities
+
+    face_on_similarities = process_baseline(face_on_data)
+    down_the_line_similarities = process_baseline(down_the_line_data)
+
+    # เลือกผลลัพธ์ที่ดีที่สุดระหว่าง face-on และ down-the-line
+    best_similarities = {}
+    for pose in poses:
+        face_on = face_on_similarities.get(pose, (None, 0))
+        down_the_line = down_the_line_similarities.get(pose, (None, 0))
+        best_similarities[pose] = max([face_on, down_the_line], key=lambda x: x[1] if x[1] is not None else 0)
+
+    return best_similarities
 
 def main(input_video_path):
     
@@ -354,7 +383,29 @@ def process_video_api():
 
         df_with_predictions = predict_poses(csv_path)
         df_with_predictions.to_csv(prediction_csv_path, index=False)
-        similarities, average_similarity = assess_similarity(prediction_csv_path)
+        
+        similarities = assess_similarity(prediction_csv_path)
+    
+        if not similarities:
+            return jsonify({'error': 'Failed to calculate similarities'}), 500
+
+        # ปรับโครงสร้างข้อมูล similarities ให้เข้ากับ frontend
+        similarity_data = []
+        for pose in poses:
+            if pose in similarities:
+                angle_similarities, overall_similarity = similarities[pose]
+                if angle_similarities is not None:
+                    pose_data = [round(angle_similarities.get(angle, 0) * 100, 2) for angle in angle_columns]
+                else:
+                    pose_data = [0] * len(angle_columns)
+                similarity_data.append(pose_data)
+            else:
+                similarity_data.append([0] * len(angle_columns))
+
+        if not similarity_data:
+            return jsonify({'error': 'No similarity data available'}), 500
+
+        average_similarity = sum([sum(pose_data) / len(pose_data) for pose_data in similarity_data]) / len(similarity_data)
 
         results = {
             'username': username,
@@ -363,8 +414,8 @@ def process_video_api():
             'output_video': 'output_golf.mp4',
             'csv_data': 'data.csv',
             'predicted_data': 'predicted_data.csv',
-            'similarities': [round(float(similarities.get(pose, 0)) * 100, 2) for pose in poses],
-            'average_similarity': round(float(average_similarity) * 100, 2)
+            'similarities': similarity_data,
+            'average_similarity': round(average_similarity, 2)
         }
 
         return jsonify(results)

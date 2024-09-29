@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import '../css/videoupload.css';
 import BoxReveal from "../components/magicui/box-reveal";
 import axios from 'axios';
+import { Tooltip } from 'react-tooltip';
 
 function UploadVideo() {
   const [videoPreview, setVideoPreview] = useState(null);
@@ -115,6 +116,12 @@ function UploadVideo() {
       resetState();
     };
 
+    const poseNames = ['Address', 'Toe-Up', 'Mid-Backswing', 'Top', 'Mid-Downswing', 'Impact', 'Mid-Follow-Through', 'Finish'];
+    const angleNames = [
+      'Left Shoulder', 'Right Shoulder', 'Left Elbow', 'Right Elbow',
+      'Left Hip', 'Right Hip', 'Left Knee', 'Right Knee'
+    ];
+
     return (
       <div className="result-popup-overlay">
         <div className="result-popup-content">
@@ -131,9 +138,36 @@ function UploadVideo() {
           </div>
           <div className="similarity-results">
             <h3 className='resultinfo-header'>Pose Similarities</h3>
-            {similarities.map((similarity, index) => (
-              <p className='info' key={index}>{['Address', 'Toe-Up', 'Mid-Backswing', 'Top', 'Mid-Downswing', 'Impact', 'Mid-Follow-Through', 'Finish'][index]}: {similarity.toFixed(2)}%</p>
-            ))}
+            <div className="pose-similarities-container">
+              {similarities.map((poseSimilarities, index) => {
+                const avgSimilarity = poseSimilarities.reduce((a, b) => a + b, 0) / poseSimilarities.length;
+                const tooltipId = `pose-tooltip-${index}`;
+                return (
+                  <div key={index} className="pose-similarity-item">
+                    <p 
+                      className='info' 
+                      data-tooltip-id={tooltipId}
+                    >
+                      {poseNames[index]}: {avgSimilarity.toFixed(2)}%
+                    </p>
+                    <Tooltip 
+                      id={tooltipId} 
+                      place="right"
+                      className="custom-tooltip"
+                    >
+                      <div className="tooltip-content">
+                        {angleNames.map((angle, i) => (
+                          <div key={i} className="tooltip-item">
+                            <span className="angle-name">{angle}:</span>
+                            <span className="angle-value">{poseSimilarities[i].toFixed(2)}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </Tooltip>
+                  </div>
+                );
+              })}
+            </div>
             <h4 className='resultinfo-header'>Average Similarity: {averageSimilarity.toFixed(2)}%</h4>
           </div>
           <button onClick={handleClose} className='result-close-button'>
