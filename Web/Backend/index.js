@@ -4,11 +4,12 @@ const cors = require('cors');
 const multer = require('multer');
 const axios = require('axios');
 const app = express();
-const fs = require('fs').promises; // Use promises version of fs
+const fs = require('fs').promises;
 const path = require('path');
 
 app.use(cors());
 app.use(express.json({ limit: '500mb' }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const db = mysql.createConnection({
     user: 'root',
@@ -53,10 +54,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Serve static files from the uploads directory
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes
+
 app.get('/', (req, res) => {
     res.send("Welcome to the Golf Swing Analysis API");
 });
@@ -115,14 +116,12 @@ app.post('/signup', (req, res) => {
 
 app.post('/upload', (req, res) => {
     const username = req.body.username;
-    const video = req.file; // ตรวจสอบว่ามีไฟล์ถูกส่งมา
+    const video = req.file;
 
-    // ตรวจสอบว่ามี username และไฟล์วิดีโอถูกส่งมาหรือไม่
     if (!username || !video) {
         return res.status(400).json({ message: "Username and video are required" });
     }
 
-    // ตรวจสอบว่าพบผู้ใช้หรือไม่
     const query = 'SELECT * FROM users WHERE username = ?';
     connection.query(query, [username], (error, results) => {
         if (error) {
@@ -194,7 +193,7 @@ app.post('/save-result', async (req, res) => {
 app.get('/history', (req, res) => {
     const username = req.query.username;
     const page = parseInt(req.query.page) || 1;
-    const rowsPerPage = 4; // Adjust this value as needed
+    const rowsPerPage = 4;
 
     console.log(`Fetching history for username: ${username}, page: ${page}`);
 

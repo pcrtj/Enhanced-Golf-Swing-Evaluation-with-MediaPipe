@@ -126,7 +126,7 @@ function UploadVideo() {
       <div className="result-popup-overlay">
         <div className="result-popup-content">
           <h2 className='headerresult'>Processing Results</h2>
-          <div className="video-container">
+          {/* <div className="video-container">
             <div>
               <h3 className='resultinfo'>Original Video</h3>
               <video controls src={originalVideoPath} style={{ width: '100%', maxWidth: '400px' }} />
@@ -135,7 +135,7 @@ function UploadVideo() {
               <h3 className='resultinfo'>Processed Video</h3>
               <video controls src={processedVideoPath} style={{ width: '100%', maxWidth: '400px' }} />
             </div>
-          </div>
+          </div> */}
           <div className="similarity-results">
             <h3 className='resultinfo-header'>Pose Similarities</h3>
             <div className="pose-similarities-container">

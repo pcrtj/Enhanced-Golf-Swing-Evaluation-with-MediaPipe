@@ -43,14 +43,14 @@ const CircularProgress = ({ value }) => {
 };
 
 const HistoryTable = () => {
-  document.body.style.overflow = "hidden";
+  // document.body.style.overflow = "hidden";
 
   const [currentPage, setCurrentPage] = useState(1);
   const [historyData, setHistoryData] = useState([]);
   const [username, setUsername] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const rowsPerPage = 3; // Changed to 3 rows per page
+  const rowsPerPage = 4;
 
   useEffect(() => {
     const storedUsername = sessionStorage.getItem('username');
@@ -216,13 +216,15 @@ const HistoryTable = () => {
       <tr key={item.E_ID}>
         <td>{item.date}</td>
         <td>
-          <video width="200" controls>
-            <source src={item.inputClip} type="video/mp4" />
+          <video width="200" height="250" controls>
+            <source src={`http://localhost:3000/uploads/${item.inputClip}`} type="video/mp4" />
+            Your browser does not support the video tag.
           </video>
         </td>
         <td>
-          <video width="200" controls>
-            <source src={item.outputClip} type="video/mp4" />
+          <video width="200" height="250" controls>
+            <source src={`http://localhost:3000/uploads/${item.outputClip}`} type="video/mp4" />
+            Your browser does not support the video tag.
           </video>
         </td>
         <td>

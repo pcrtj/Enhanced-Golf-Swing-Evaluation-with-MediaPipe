@@ -648,6 +648,7 @@ h4.resultinfo{
   border-radius: 4px !important;
   padding: 10px !important;
   font-size: 16px !important;
+  z-index: 1000;
 }
 
 .tooltip-content {
