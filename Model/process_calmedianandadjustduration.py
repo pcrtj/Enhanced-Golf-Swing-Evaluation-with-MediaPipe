@@ -4,7 +4,7 @@ import numpy as np
 from moviepy.editor import VideoFileClip
 from moviepy.video.fx import speedx
 
-def calculate_median_duration(folder_path):
+def calculate_mean_duration(folder_path):
     duration_values = []
     for filename in os.listdir(folder_path):
         if filename.endswith(".csv"):
@@ -19,7 +19,7 @@ def calculate_median_duration(folder_path):
     print(f"Median duration: {median_duration}")
     print(f"Mean duration  : {mean_duration}")
     
-    return median_duration
+    return mean_duration
 
 def adjust_video_duration(input_path, output_path, target_duration):
     with VideoFileClip(input_path) as video:
@@ -28,7 +28,7 @@ def adjust_video_duration(input_path, output_path, target_duration):
         adjusted_video = video.fx(speedx.speedx, speed_factor)
         adjusted_video.write_videofile(output_path, codec="libx264")
 
-def process_videos(input_folder, output_folder, median_duration):
+def process_videos(input_folder, output_folder, mean_duration):
     os.makedirs(output_folder, exist_ok=True)
     
     file_list = [filename for filename in os.listdir(input_folder) if filename.endswith(".mp4")]
@@ -37,7 +37,7 @@ def process_videos(input_folder, output_folder, median_duration):
     for i, filename in enumerate(file_list):
         input_path = os.path.join(input_folder, filename)
         output_path = os.path.join(output_folder, filename)
-        adjust_video_duration(input_path, output_path, median_duration)
+        adjust_video_duration(input_path, output_path, mean_duration)
         print(f"Processing video {i+1}/{total_files} : {filename}")
         
     print("Video duration adjustment is complete.")
@@ -47,6 +47,6 @@ if __name__ == "__main__":
     input_folder = "./output/baseline/combined"
     output_folder = "./output/baseline/combined/adjusted"
 
-    median_duration = calculate_median_duration(csv_folder_path)
+    mean_duration = calculate_mean_duration(csv_folder_path)
 
-    process_videos(input_folder, output_folder, median_duration)
+    process_videos(input_folder, output_folder, mean_duration)

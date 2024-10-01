@@ -2,14 +2,11 @@ import os
 from moviepy.editor import VideoFileClip
 from moviepy.video.fx import speedx
 
-input_folder = "./output/baseline/combined"
-output_folder = "./output/baseline/combined/adjusted"
-# median_duration = 2.335669002335669  # ความยาวเป็นวินาที
-# median_duration = 9.40940940940941  # down-the-line
-# median_duration = 9.65006010418058  # face-on
-# median_duration = 9.107584346632601  # other
-# median_duration = 9.540647925555941  # combined
-median_duration = 8.208208208208209  # combined realtime
+input_folder = "./output/baseline/combined/realtime"
+output_folder = "./output/baseline/combined/adjusted/realtime"
+
+mean_duration = 8.761422104064687  # combined realtime
+
 os.makedirs(output_folder, exist_ok=True)
 
 def adjust_video_duration(input_path, output_path, target_duration):
@@ -25,7 +22,7 @@ total_files = len(file_list)
 for i, filename in enumerate(file_list):
     input_path = os.path.join(input_folder, filename)
     output_path = os.path.join(output_folder, filename)
-    adjust_video_duration(input_path, output_path, median_duration)
+    adjust_video_duration(input_path, output_path, mean_duration)
     print(f"Processing video {i+1}/{total_files} : {filename}")
 
 print("Video length adjustment is complete.")

@@ -8,10 +8,10 @@ const CircularProgress = ({ value }) => {
   const strokeDashoffset = circumference - (value / 100) * circumference;
 
   const getColor = (value) => {
-    if (value < 41) return '#EB4343';
-    if (value < 51) return '#FF9933';
-    if (value < 61) return '#FFFF33';
-    return '#99FF00';
+    if (value < 41) return 'rgba(255, 65, 54, 1.0)';
+    if (value < 61) return 'rgba(255, 133, 27, 1.0)';
+    if (value < 81) return 'rgba(46, 204, 64, 1.0)';
+    return 'rgba(61, 153, 112, 1.0)';
   };
 
   return (
@@ -111,10 +111,10 @@ const HistoryTable = () => {
   ];
 
   const getBarColor = (value) => {
-    if (value < 41) return '#EB4343';
-    if (value < 51) return '#FF9933';
-    if (value < 61) return '#FFFF33';
-    return '#99FF00';
+    if (value < 41) return 'rgba(255, 65, 54, 1.0)';
+    if (value < 61) return 'rgba(255, 133, 27, 1.0)';
+    if (value < 81) return 'rgba(46, 204, 64, 1.0)';
+    return 'rgba(61, 153, 112, 1.0)';
   };
 
   const calculateAverageAccuracy = (accuracies) => {
@@ -139,10 +139,10 @@ const HistoryTable = () => {
     }, [active, label, rowIndex]);
   
     const getBackgroundColor = (value) => {
-      if (value < 41) return 'rgba(220, 53, 69, 0.8)';
-      if (value < 51) return 'rgba(255, 120, 7, 0.8)';
-      if (value < 61) return 'rgba(255, 244, 0, 0.6)';
-      return 'rgba(40, 167, 69, 0.8)';
+      if (value < 41) return 'rgba(255, 65, 54, 0.8)';
+      if (value < 61) return 'rgba(255, 133, 27, 0.8)';
+      if (value < 81) return 'rgba(46, 204, 64, 0.8)';
+      return 'rgba(61, 153, 112, 0.8)';
     };
   
     const getTextColor = (value) => {
@@ -250,6 +250,8 @@ const HistoryTable = () => {
                   axisLine={{ stroke: '#ffffff' }}
                   tickLine={{ stroke: '#ffffff' }}
                   domain={[0, 100]}
+                  ticks={[0, 100]}
+                  tickCount={2}
                 />
                 <Tooltip
                   content={<CustomTooltip rowIndex={rowIndex} />}

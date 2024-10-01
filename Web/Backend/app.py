@@ -2,35 +2,29 @@ from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import os
 import cv2
+import csv
 import mediapipe as mp
 import numpy as np
-import csv
 import pandas as pd
 import tensorflow as tf
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics.pairwise import cosine_similarity
 import joblib
-import json
 import time
-from flask import Flask, request, jsonify
 from flask_cors import CORS
-import numpy as np
 from scipy.spatial.distance import euclidean
+from process_cleandata import clean_golf_swing_data_dtw, correct_sequence
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-
 UPLOAD_FOLDER = './uploads'
 PROCESSED_FOLDER = './uploads'
 CSV_FOLDER = './uploads'
-MODEL_SAVE_PATH = './model/epoch 30'
-BASELINE_FOLDER = './baseline/epoch 50/'
-FACE_ON_BASELINE_FOLDER = './baseline/epoch 30/face_on'
-DOWN_THE_LINE_BASELINE_FOLDER = './baseline/epoch 30/down_the_line'
+MODEL_SAVE_PATH = './model/after5fold'
+FACE_ON_BASELINE_FOLDER = './baseline/after5fold_cleaned_dtw/face_on'
+DOWN_THE_LINE_BASELINE_FOLDER = './baseline/after5fold_cleaned_dtw/down_the_line'
 ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mov'}
 
-median_duration = 8.208208208208209
+mean_duration = 8.761422104064687
 
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.holistic
@@ -39,10 +33,11 @@ model = tf.keras.models.load_model(os.path.join(MODEL_SAVE_PATH, 'lstm_golf_swin
 le = joblib.load(os.path.join(MODEL_SAVE_PATH, 'label_encoder.joblib'))
 scaler = joblib.load(os.path.join(MODEL_SAVE_PATH, 'scaler.joblib'))
 
-poses = ['Address', 'Toe-Up', 'Mid-Backswing', 'Top', 'Mid-Downswing', 'Impact', 'Mid-Follow-Through', 'Finish']
+correct_sequence = ['Preparation', 'Address', 'Toe-Up', 'Mid-Backswing', 'Top', 'Mid-Downswing', 'Impact', 'Mid-Follow-Through', 'Finish']
+analyzed_poses = ['Address', 'Toe-Up', 'Mid-Backswing', 'Top', 'Mid-Downswing', 'Impact', 'Mid-Follow-Through', 'Finish']
 
 angle_columns = ['Left Shoulder Angle', 'Right Shoulder Angle', 'Left Elbow Angle', 'Right Elbow Angle',
-                     'Left Hip Angle', 'Right Hip Angle', 'Left Knee Angle', 'Right Knee Angle']
+                 'Left Hip Angle', 'Right Hip Angle', 'Left Knee Angle', 'Right Knee Angle']
 
 def calculate_angle(a, b, c):
     a = np.array(a)
@@ -217,7 +212,10 @@ def predict_poses(file_path):
     predicted_classes = np.argmax(predictions, axis=1)
     predicted_labels = le.inverse_transform(predicted_classes)
     
-    df['Predicted_Pose'] = predicted_labels
+    # Clean the predicted labels
+    cleaned_predictions = clean_golf_swing_data_dtw(predicted_labels)
+    
+    df['Predicted_Pose'] = cleaned_predictions
     return df
 
 def load_data(file_path):
@@ -227,7 +225,7 @@ def load_data(file_path):
     return df[angle_columns + ['Predicted_Pose']]
 
 def split_data_by_pose(data):
-    return {pose: data[data['Predicted_Pose'] == pose].drop('Predicted_Pose', axis=1) for pose in poses}
+    return {pose: data[data['Predicted_Pose'] == pose].drop('Predicted_Pose', axis=1) for pose in analyzed_poses}
 
 def calculate_similarity(baseline, user):
     if baseline.empty or user.empty:
@@ -296,7 +294,7 @@ def assess_similarity(user_csv_path, face_on_folder=FACE_ON_BASELINE_FOLDER, dow
         baseline_poses = split_data_by_pose(pd.concat(baseline_data))
         user_poses = split_data_by_pose(user_data)
         similarities = {}
-        for pose in poses:
+        for pose in analyzed_poses:
             if pose in baseline_poses and pose in user_poses:
                 angle_similarities, overall_similarity = calculate_similarity(baseline_poses[pose], user_poses[pose])
                 similarities[pose] = (angle_similarities, overall_similarity)
@@ -305,9 +303,8 @@ def assess_similarity(user_csv_path, face_on_folder=FACE_ON_BASELINE_FOLDER, dow
     face_on_similarities = process_baseline(face_on_data)
     down_the_line_similarities = process_baseline(down_the_line_data)
 
-    # เลือกผลลัพธ์ที่ดีที่สุดระหว่าง face-on และ down-the-line
     best_similarities = {}
-    for pose in poses:
+    for pose in analyzed_poses:
         face_on = face_on_similarities.get(pose, (None, 0))
         down_the_line = down_the_line_similarities.get(pose, (None, 0))
         best_similarities[pose] = max([face_on, down_the_line], key=lambda x: x[1] if x[1] is not None else 0)
@@ -315,21 +312,18 @@ def assess_similarity(user_csv_path, face_on_folder=FACE_ON_BASELINE_FOLDER, dow
     return best_similarities
 
 def main(input_video_path):
-    
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
     os.makedirs(PROCESSED_FOLDER, exist_ok=True)
     os.makedirs(CSV_FOLDER, exist_ok=True)
 
-    
     filename = os.path.basename(input_video_path)
     adjusted_path = os.path.join(UPLOAD_FOLDER, 'adjusted_' + filename)
     output_video_path = os.path.join(PROCESSED_FOLDER, 'processed_' + filename)
     csv_path = os.path.join(CSV_FOLDER, os.path.splitext(filename)[0] + '.csv')
     prediction_csv_path = os.path.join(CSV_FOLDER, 'predicted_' + os.path.basename(csv_path))
 
-
     print("Adjusting video duration...")
-    adjust_video_duration(input_video_path, adjusted_path, median_duration)
+    adjust_video_duration(input_video_path, adjusted_path, mean_duration)
     
     print("Processing video...")
     process_video(adjusted_path, output_video_path, csv_path)
@@ -338,18 +332,25 @@ def main(input_video_path):
     df_with_predictions = predict_poses(csv_path)
     df_with_predictions.to_csv(prediction_csv_path, index=False)
 
-    print("Assessing similarity...")
-    similarities, average_similarity = assess_similarity(prediction_csv_path)
+    cleaned_csv_path = os.path.join(CSV_FOLDER, 'cleaned_predicted_' + os.path.basename(csv_path))
+    df_with_predictions.to_csv(cleaned_csv_path, index=False)
 
+    print("Assessing similarity...")
+    similarities = assess_similarity(cleaned_csv_path)
 
     print("\nResults:")
     print(f"Input Video: {input_video_path}")
     print(f"Processed Video: {output_video_path}")
     print(f"CSV Path: {csv_path}")
     print(f"Prediction CSV Path: {prediction_csv_path}")
+    print(f"Cleaned Prediction CSV Path: {cleaned_csv_path}")
     print("\nSimilarities:")
-    for pose, similarity in similarities.items():
-        print(f"{pose}: {similarity * 100:.2f}%")
+    for pose in analyzed_poses:
+        if pose in similarities:
+            angle_similarities, overall_similarity = similarities[pose]
+            print(f"{pose}: {overall_similarity * 100:.2f}%")
+    
+    average_similarity = np.mean([similarities[pose][1] for pose in analyzed_poses if pose in similarities and similarities[pose][1] is not None])
     print(f"\nAverage Similarity: {average_similarity * 100:.2f}%")
 
 @app.route('/process_video', methods=['POST'])
@@ -378,24 +379,27 @@ def process_video_api():
         csv_path = os.path.join(temp_folder, 'data.csv')
         prediction_csv_path = os.path.join(temp_folder, 'predicted_data.csv')
 
-        adjust_video_duration(input_path, adjusted_path, median_duration)
+        adjust_video_duration(input_path, adjusted_path, mean_duration)
         process_video(adjusted_path, output_path, csv_path)
 
         df_with_predictions = predict_poses(csv_path)
-        df_with_predictions.to_csv(prediction_csv_path, index=False)
+    
+        # Save the cleaned predictions to a new CSV file
+        cleaned_csv_path = os.path.join(temp_folder, 'cleaned_predicted_data.csv')
+        df_with_predictions.to_csv(cleaned_csv_path, index=False)
         
-        similarities = assess_similarity(prediction_csv_path)
+        # Use the cleaned data for similarity assessment
+        similarities = assess_similarity(cleaned_csv_path)
     
         if not similarities:
             return jsonify({'error': 'Failed to calculate similarities'}), 500
 
-        # ปรับโครงสร้างข้อมูล similarities ให้เข้ากับ frontend
         similarity_data = []
-        for pose in poses:
+        for pose in analyzed_poses:
             if pose in similarities:
                 angle_similarities, overall_similarity = similarities[pose]
                 if angle_similarities is not None:
-                    pose_data = [round(angle_similarities.get(angle, 0) * 100, 2) for angle in angle_columns]
+                    pose_data = [min(100, round(angle_similarities.get(angle, 0) * 100 * 1.25, 2)) for angle in angle_columns]
                 else:
                     pose_data = [0] * len(angle_columns)
                 similarity_data.append(pose_data)
@@ -407,15 +411,19 @@ def process_video_api():
 
         average_similarity = sum([sum(pose_data) / len(pose_data) for pose_data in similarity_data]) / len(similarity_data)
 
+        
+        with open(cleaned_csv_path, 'r') as f:
+            cleaned_predicted_data = f.read()
+
         results = {
             'username': username,
             'temp_folder': temp_folder,
             'input_video': 'input_golf.mp4',
             'output_video': 'output_golf.mp4',
             'csv_data': 'data.csv',
-            'predicted_data': 'predicted_data.csv',
+            'cleaned_predicted_data': cleaned_predicted_data,
             'similarities': similarity_data,
-            'average_similarity': round(average_similarity, 2)
+            'average_similarity': min(100, round(average_similarity, 2))
         }
 
         return jsonify(results)

@@ -6,8 +6,8 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 
 INPUT_CSV_PATH = './output/baseline/combined/adjusted/realtime/hpe/csv'
-MODEL_SAVE_PATH = "./output/videos_raw/model/combined/realtime/feature correlation/epoch 50/"
-OUTPUT_PATH = "./output/baseline/combined/adjusted/realtime/hpe/csv_aftermodel/predictions/feature correlation/epoch 50"
+MODEL_SAVE_PATH = "./output/videos_raw/model/combined/realtime/feature correlation/compare model"
+OUTPUT_PATH = "./output/baseline/combined/adjusted/realtime/hpe/csv_aftermodel/predictions/feature correlation/after5fold"
 
 model = tf.keras.models.load_model(os.path.join(MODEL_SAVE_PATH, 'lstm_golf_swing_model.h5'))
 

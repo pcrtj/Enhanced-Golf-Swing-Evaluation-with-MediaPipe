@@ -4,7 +4,7 @@ import pandas as pd
 
 # Path to the CSV file and video folder
 golfdb_path = './golfdb/data/GolfDB.csv'
-video_folder = './output/baseline/combined/adjusted/realtime/hpe/csv_aftermodel/predictions/feature correlation/epoch 50/'
+video_folder = './output/baseline/combined/adjusted/realtime/hpe/csv_aftermodel/predictions/feature correlation/after5fold_cleaned_dtw/'
 
 # Load the CSV file
 golfdb = pd.read_csv(golfdb_path)
@@ -34,8 +34,8 @@ for index, row in golfdb.iterrows():
         folder_name = view_folders['other']
 
     # Source and destination paths
-    src_path = os.path.join(video_folder, f'predicted_{video_id}.csv')
-    dst_path = os.path.join(video_folder, folder_name, f'predicted_{video_id}.csv')
+    src_path = os.path.join(video_folder, f'cleaned_dtw_predicted_{video_id}.csv')
+    dst_path = os.path.join(video_folder, folder_name, f'cleaned_dtw_predicted_{video_id}.csv')
 
     # Move the video file to the corresponding folder
     if os.path.exists(src_path):
