@@ -377,18 +377,26 @@ def process_video_api():
         adjusted_path = os.path.join(temp_folder, 'adjusted_golf.mp4')
         output_path = os.path.join(temp_folder, 'output_golf.mp4')
         csv_path = os.path.join(temp_folder, 'data.csv')
-        prediction_csv_path = os.path.join(temp_folder, 'predicted_data.csv')
 
         adjust_video_duration(input_path, adjusted_path, mean_duration)
         process_video(adjusted_path, output_path, csv_path)
 
         df_with_predictions = predict_poses(csv_path)
     
-        # Save the cleaned predictions to a new CSV file
+        # บันทึก predicted_data
+        predicted_csv_path = os.path.join(temp_folder, 'predicted_data.csv')
+        df_with_predictions.to_csv(predicted_csv_path, index=False)
+    
+        # บันทึก cleaned_predicted_data
         cleaned_csv_path = os.path.join(temp_folder, 'cleaned_predicted_data.csv')
         df_with_predictions.to_csv(cleaned_csv_path, index=False)
+
+        # ตรวจสอบว่าไฟล์ถูกสร้างขึ้นจริง
+        if os.path.exists(cleaned_csv_path):
+            print(f"File {cleaned_csv_path} was created successfully.")
+        else:
+            print(f"Failed to create file {cleaned_csv_path}.")
         
-        # Use the cleaned data for similarity assessment
         similarities = assess_similarity(cleaned_csv_path)
     
         if not similarities:
@@ -411,7 +419,10 @@ def process_video_api():
 
         average_similarity = sum([sum(pose_data) / len(pose_data) for pose_data in similarity_data]) / len(similarity_data)
 
-        
+        # อ่านเนื้อหาของไฟล์ CSV
+        with open(predicted_csv_path, 'r') as f:
+            predicted_data = f.read()
+    
         with open(cleaned_csv_path, 'r') as f:
             cleaned_predicted_data = f.read()
 
@@ -421,6 +432,7 @@ def process_video_api():
             'input_video': 'input_golf.mp4',
             'output_video': 'output_golf.mp4',
             'csv_data': 'data.csv',
+            'predicted_data': predicted_data,
             'cleaned_predicted_data': cleaned_predicted_data,
             'similarities': similarity_data,
             'average_similarity': min(100, round(average_similarity, 2))

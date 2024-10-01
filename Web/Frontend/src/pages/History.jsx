@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import '../css/History.css';
 
 const CircularProgress = ({ value }) => {
@@ -43,13 +43,12 @@ const CircularProgress = ({ value }) => {
 };
 
 const HistoryTable = () => {
-  // document.body.style.overflow = "hidden";
-
   const [currentPage, setCurrentPage] = useState(1);
   const [historyData, setHistoryData] = useState([]);
   const [username, setUsername] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(true);
   const rowsPerPage = 4;
 
   useEffect(() => {
@@ -62,10 +61,10 @@ const HistoryTable = () => {
   }, []);
 
   useEffect(() => {
-    if (username) {
+    if (username && !showPopup) {
       fetchHistoryData();
     }
-  }, [currentPage, username]);
+  }, [currentPage, username, showPopup]);
 
   const fetchHistoryData = async () => {
     setLoading(true);
@@ -98,6 +97,64 @@ const HistoryTable = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
+
+  const PopupInfo = () => {
+    const scoreRanges = [
+      { range: '0-40', color: '#FF4136', label: 'Poor', value: 40 },
+      { range: '41-60', color: '#FF851B', label: 'Fair', value: 20 },
+      { range: '61-80', color: '#2ECC40', label: 'Good', value: 20 },
+      { range: '81-100', color: '#3D9970', label: 'Excellent', value: 20 },
+    ];
+
+    return (
+      <div className='popup-overlay'>
+        <div className='popup-content'>
+          <h2 className='popup-header'><mark>SWING PHASE SCORING SYSTEM</mark></h2>
+          <p className='info-text'>OUR SCORING SYSTEM IS DIVIDED INTO FOUR CATEGORIES:</p>
+          <div className="score-bar-container">
+            <div className="score-labels">
+              <span style={{left: '0%'}}>0</span>
+              <span style={{left: '40%'}}>40</span>
+              <span style={{left: '60%'}}>60</span>
+              <span style={{left: '80%'}}>80</span>
+              <span style={{left: '100%'}}>100</span>
+            </div>
+            <div className="score-bar">
+              {scoreRanges.map((range, index) => (
+                <div
+                  key={index}
+                  className="score-segment"
+                  style={{
+                    backgroundColor: range.color,
+                    width: `${range.value}%`
+                  }}
+                />
+              ))}
+            </div>
+            
+            <div className="score-categories">
+              {scoreRanges.map((range, index) => (
+                <div
+                  key={index}
+                  className="category-label"
+                  style={{ width: `${range.value}%` , color: range.color}}
+                >
+                  {range.label}
+                </div>
+              ))}
+            </div>
+          </div>
+          <button onClick={handleClosePopup} className='close-button'>
+            CONTINUE
+          </button>
+        </div>
+      </div>
+    );
   };
 
   const swingPhases = ['A', 'TU', 'MB', 'T', 'MD', 'I', 'MFT', 'F'];
@@ -221,12 +278,12 @@ const HistoryTable = () => {
             Your browser does not support the video tag.
           </video>
         </td>
-        <td>
+        {/* <td>
           <video width="200" height="250" controls>
             <source src={`http://localhost:3000/uploads/${item.outputClip}`} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-        </td>
+        </td> */}
         <td>
           <div className="chart-container" style={{ position: 'relative', height: '100px' }}>
             <ResponsiveContainer width="100%" height={100}>
@@ -297,7 +354,8 @@ const HistoryTable = () => {
 
   return (
     <div className="history-container">
-      {username ? (
+      {showPopup && <PopupInfo />}
+      {username && !showPopup ? (
         <>
           <div className="table-wrapper">
             <table className="history-table">
@@ -305,7 +363,7 @@ const HistoryTable = () => {
                 <tr>
                   <th>Date/Time</th>
                   <th>Input Clip</th>
-                  <th>Output Clip</th>
+                  {/* <th>Output Clip</th> */}
                   <th>Accuracy per Phase</th>
                   <th>Average Accuracy</th>
                 </tr>
@@ -333,7 +391,7 @@ const HistoryTable = () => {
           </div>
         </>
       ) : (
-        <div className="login-message">Please log in to view your history.</div>
+        <div className="login-message"></div>
       )}
     </div>
   );

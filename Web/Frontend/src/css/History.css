@@ -179,3 +179,110 @@
       width: 100%;
     }
   }
+  
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .popup-content {
+    background-color: #405a4c;
+    padding: 30px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    color: white;
+    text-align: center;
+  }
+  
+  .popup-header {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #ffffff;
+  }
+  
+  .info-text {
+    font-size: 18px;
+    margin-bottom: 25px;
+  }
+  
+  .score-bar-container {
+    margin: 20px 0;
+    position: relative;
+  }
+  
+  .score-bar {
+    display: flex;
+    height: 30px;
+    width: 100%;
+    border-radius: 0;
+    overflow: hidden;
+  }
+  
+  .score-segment {
+    height: 100%;
+    
+  }
+
+  .score-labels {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: bold;
+    font-weight: 800;
+    font-style: normal;
+    text-transform: uppercase;
+    position: relative;
+    height: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .score-labels span {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 16px;
+  }
+  
+  .score-categories {
+    display: flex;
+    font-size: 16px;
+    margin-top: 5px;
+  }
+  
+  .category-label {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 0 5px;
+    margin-top: 10px;
+  }
+  
+  .close-button {
+    margin-top: 25px;
+    padding: 10px 30px;
+    background-color: #ffffff;
+    color: #405a4c;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  .close-button:hover {
+    background-color: #f44336;
+    box-shadow: 0px 15px 20px rgba(247, 52, 26, 0.459);
+    color: #fff;
+  }

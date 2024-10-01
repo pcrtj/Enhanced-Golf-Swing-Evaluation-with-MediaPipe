@@ -86,19 +86,16 @@ function UploadVideo() {
         throw new Error(flaskResponse.data.error);
       }
 
-      // Update state with processed results
       setProcessedResult(flaskResponse.data);
       setOriginalVideoPath(`http://localhost:3000/uploads/${flaskResponse.data.E_ID}/${flaskResponse.data.input_video}`);
       setProcessedVideoPath(`http://localhost:3000/uploads/${flaskResponse.data.E_ID}/${flaskResponse.data.output_video}`);
       setSimilarities(flaskResponse.data.similarities);
       setAverageSimilarity(flaskResponse.data.average_similarity);
 
-      // Send to Express server to save in database
       console.log('Sending data to Express server...');
       await axios.post('http://localhost:3000/save-result', flaskResponse.data);
       console.log('Data saved successfully');
 
-      // Show result popup
       setShowResultPopup(true);
     } catch (error) {
       console.error('Error processing the video:', error);
@@ -126,16 +123,6 @@ function UploadVideo() {
       <div className="result-popup-overlay">
         <div className="result-popup-content">
           <h2 className='headerresult'>Processing Results</h2>
-          {/* <div className="video-container">
-            <div>
-              <h3 className='resultinfo'>Original Video</h3>
-              <video controls src={originalVideoPath} style={{ width: '100%', maxWidth: '400px' }} />
-            </div>
-            <div>
-              <h3 className='resultinfo'>Processed Video</h3>
-              <video controls src={processedVideoPath} style={{ width: '100%', maxWidth: '400px' }} />
-            </div>
-          </div> */}
           <div className="similarity-results">
             <h3 className='resultinfo-header'>Pose Similarities</h3>
             <div className="pose-similarities-container">
@@ -261,7 +248,7 @@ function UploadVideo() {
                     ref={videoRef}
                     src={videoPreview} 
                     controls 
-                    style={{ width: '100%', height: '100%' }} 
+                    className="video-preview"
                   />
                 </div>
               ) : (
