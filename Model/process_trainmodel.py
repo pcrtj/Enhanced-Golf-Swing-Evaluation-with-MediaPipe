@@ -5,17 +5,20 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, roc_curve, auc, confusion_matrix
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout, GRU, Conv1D, MaxPooling1D, Flatten
+from tensorflow.keras.layers import LSTM, Dense, Dropout, GRU, Conv1D, GlobalMaxPooling1D, Flatten, Input
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import Callback
 import joblib
 from tqdm import tqdm
 from tabulate import tabulate
+import matplotlib.pyplot as plt
+import seaborn as sns
+import time
 
 CSV_FOLDER = "./output/videos_raw/csv/combined/realtime"
-MODEL_SAVE_PATH = "./output/videos_raw/model/combined/realtime/feature correlation/compare model"
+MODEL_SAVE_PATH = "./output/videos_raw/model/combined/realtime/feature correlation/after5fold/"
 
 class TqdmProgressCallback(Callback):
     def __init__(self, epochs):
@@ -68,7 +71,10 @@ def load_and_prepare_data(csv_folder):
     return X, y
 
 def evaluate_model(model, X_test, y_test):
+    start_time = time.time()
     y_pred = model.predict(X_test)
+    end_time = time.time()
+    
     y_pred_classes = np.argmax(y_pred, axis=1) if y_pred.ndim > 1 else y_pred
     
     accuracy = accuracy_score(y_test, y_pred_classes)
@@ -76,17 +82,23 @@ def evaluate_model(model, X_test, y_test):
     recall = recall_score(y_test, y_pred_classes, average='weighted')
     f1 = f1_score(y_test, y_pred_classes, average='weighted')
     
-    # For ROC AUC, we need to binarize the output
     y_test_bin = to_categorical(y_test)
     y_pred_bin = to_categorical(y_pred_classes)
     roc_auc = roc_auc_score(y_test_bin, y_pred_bin, average='weighted', multi_class='ovr')
+    
+    time_per_data = (end_time - start_time) / len(X_test)
+    
+    # Calculate confusion matrix
+    cm = confusion_matrix(y_test, y_pred_classes)
     
     return {
         'Accuracy': accuracy,
         'Precision': precision,
         'Recall': recall,
         'F1 Score': f1,
-        'ROC AUC': roc_auc
+        'ROC AUC': roc_auc,
+        'Time per Data': time_per_data,
+        'Confusion Matrix': cm
     }
 
 def train_and_evaluate_model(model, X, y, model_name, n_splits=5):
@@ -101,28 +113,83 @@ def train_and_evaluate_model(model, X, y, model_name, n_splits=5):
             model.fit(X_train, y_train)
             fold_metrics = evaluate_model(model, X_val, y_val)
         else:  # Deep learning models
-            X_train_reshaped = X_train.reshape((X_train.shape[0], 1, X_train.shape[1]))
-            X_val_reshaped = X_val.reshape((X_val.shape[0], 1, X_val.shape[1]))
+            if model_name == "1D CNN":
+                X_train_reshaped = X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
+                X_val_reshaped = X_val.reshape((X_val.shape[0], X_val.shape[1], 1))
+            else:
+                X_train_reshaped = X_train.reshape((X_train.shape[0], 1, X_train.shape[1]))
+                X_val_reshaped = X_val.reshape((X_val.shape[0], 1, X_val.shape[1]))
             y_train_cat = to_categorical(y_train)
             y_val_cat = to_categorical(y_val)
             
             model.fit(X_train_reshaped, y_train_cat, epochs=30, batch_size=32, 
-                      validation_data=(X_val_reshaped, y_val_cat), verbose=0)
+                      validation_data=(X_val_reshaped, y_val_cat), verbose=0,
+                      callbacks=[TqdmProgressCallback(epochs=30)])
             fold_metrics = evaluate_model(model, X_val_reshaped, y_val)
         
         fold_results.append(fold_metrics)
         print(f"Fold {fold} completed for {model_name}")
     
-    # Calculate average metrics across folds
     avg_metrics = {metric: np.mean([fold[metric] for fold in fold_results]) 
-                   for metric in fold_results[0].keys()}
+                   for metric in fold_results[0].keys() if metric != 'Confusion Matrix'}
+    
+    # Sum up confusion matrices from all folds
+    avg_metrics['Confusion Matrix'] = sum([fold['Confusion Matrix'] for fold in fold_results])
     
     return avg_metrics
 
 def print_results_table(results):
-    headers = ["Model"] + list(next(iter(results.values())).keys())
-    table_data = [[model] + list(metrics.values()) for model, metrics in results.items()]
+    headers = ["Model"] + [metric for metric in next(iter(results.values())).keys() if metric != 'Confusion Matrix']
+    table_data = [[model] + [metrics[metric] for metric in headers[1:]] for model, metrics in results.items()]
     print(tabulate(table_data, headers=headers, tablefmt="grid", floatfmt=".4f"))
+
+def plot_confusion_matrix(cm, class_names, model_name):
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=class_names, yticklabels=class_names)
+    plt.title(f'Confusion Matrix - {model_name}')
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.savefig(os.path.join(MODEL_SAVE_PATH, f'confusion_matrix_{model_name}.png'))
+    plt.close()
+
+def plot_roc_curves(results, X, y):
+    plt.figure(figsize=(10, 8))
+    
+    for model_name, metrics in results.items():
+        if model_name in ['Decision Tree', 'Random Forest']:
+            y_pred_proba = models[model_name].predict_proba(X)
+        else:  # Deep learning models
+            if model_name == "1D CNN":
+                X_reshaped = X.reshape((X.shape[0], X.shape[1], 1))
+            else:
+                X_reshaped = X.reshape((X.shape[0], 1, X.shape[1]))
+            y_pred_proba = models[model_name].predict(X_reshaped)
+        
+        fpr = dict()
+        tpr = dict()
+        roc_auc = dict()
+        
+        for i in range(len(np.unique(y))):
+            fpr[i], tpr[i], _ = roc_curve((y == i).astype(int), y_pred_proba[:, i])
+            roc_auc[i] = auc(fpr[i], tpr[i])
+        
+        # Compute micro-average ROC curve and ROC area
+        fpr["micro"], tpr["micro"], _ = roc_curve(to_categorical(y).ravel(), y_pred_proba.ravel())
+        roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+        
+        plt.plot(fpr["micro"], tpr["micro"],
+                 label=f'{model_name} (AUC = {roc_auc["micro"]:.4f})',
+                 linewidth=2)
+    
+    plt.plot([0, 1], [0, 1], 'k--', linewidth=2)
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver Operating Characteristic (ROC) Curve')
+    plt.legend(loc="lower right")
+    plt.savefig(os.path.join(MODEL_SAVE_PATH, 'roc_curves.png'))
+    plt.close()
 
 # Main execution
 X, y = load_and_prepare_data(CSV_FOLDER)
@@ -133,51 +200,68 @@ scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 results = {}
+models = {}
 
 # Decision Tree
 dt_model = DecisionTreeClassifier(random_state=42)
 results['Decision Tree'] = train_and_evaluate_model(dt_model, X_scaled, y_encoded, "Decision Tree")
+models['Decision Tree'] = dt_model
 
 # Random Forest
 rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
 results['Random Forest'] = train_and_evaluate_model(rf_model, X_scaled, y_encoded, "Random Forest")
+models['Random Forest'] = rf_model
 
 # LSTM
 lstm_model = Sequential([
-    LSTM(100, input_shape=(1, X_scaled.shape[1]), return_sequences=True),
+    Input(shape=(1, X_scaled.shape[1])),
+    LSTM(100, return_sequences=True),
     Dropout(0.2),
     LSTM(50),
     Dropout(0.2),
-    Dense(len(le.classes_), activation='softmax')
+    Dense(len(np.unique(y_encoded)), activation='softmax')
 ])
 lstm_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 results['LSTM'] = train_and_evaluate_model(lstm_model, X_scaled, y_encoded, "LSTM")
+models['LSTM'] = lstm_model
 
 # GRU
 gru_model = Sequential([
-    GRU(100, input_shape=(1, X_scaled.shape[1]), return_sequences=True),
+    Input(shape=(1, X_scaled.shape[1])),
+    GRU(100, return_sequences=True),
     Dropout(0.2),
     GRU(50),
     Dropout(0.2),
-    Dense(len(le.classes_), activation='softmax')
+    Dense(len(np.unique(y_encoded)), activation='softmax')
 ])
 gru_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 results['GRU'] = train_and_evaluate_model(gru_model, X_scaled, y_encoded, "GRU")
+models['GRU'] = gru_model
 
 # 1D CNN
 cnn_model = Sequential([
-    Conv1D(filters=64, kernel_size=1, activation='relu', input_shape=(1, X_scaled.shape[1])),
-    Flatten(),
+    Input(shape=(X_scaled.shape[1], 1)),
+    Conv1D(filters=64, kernel_size=3, activation='relu', padding='same'),
+    GlobalMaxPooling1D(),
     Dense(100, activation='relu'),
     Dropout(0.2),
-    Dense(len(le.classes_), activation='softmax')
+    Dense(len(np.unique(y_encoded)), activation='softmax')
 ])
 cnn_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 results['1D CNN'] = train_and_evaluate_model(cnn_model, X_scaled, y_encoded, "1D CNN")
+models['1D CNN'] = cnn_model
 
 # Print results table
 print("\nModel Performance Summary (5-Fold Cross-Validation):")
 print_results_table(results)
+
+# Plot ROC curves
+plot_roc_curves(results, X_scaled, y_encoded)
+
+# Plot confusion matrices
+for model_name, model_metrics in results.items():
+    cm = model_metrics['Confusion Matrix']
+    plot_confusion_matrix(cm, le.classes_, model_name)
 
 # Save models and encoders
 if not os.path.exists(MODEL_SAVE_PATH):
@@ -192,6 +276,8 @@ joblib.dump(le, os.path.join(MODEL_SAVE_PATH, 'label_encoder.joblib'))
 joblib.dump(scaler, os.path.join(MODEL_SAVE_PATH, 'scaler.joblib'))
 
 print("\nAll models have been trained and saved successfully.")
+print("ROC curves have been plotted and saved as 'roc_curves.png'.")
+print("Confusion matrices have been plotted and saved for each model.")
 
 
 # import os
