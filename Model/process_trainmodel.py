@@ -144,11 +144,46 @@ def print_results_table(results):
     print(tabulate(table_data, headers=headers, tablefmt="grid", floatfmt=".4f"))
 
 def plot_confusion_matrix(cm, class_names, model_name):
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=class_names, yticklabels=class_names)
-    plt.title(f'Confusion Matrix - {model_name}')
+    # Define the mapping from full names to abbreviations
+    name_to_abbr = {
+        'Address': 'A',
+        'Toe-Up': 'TU',
+        'Mid-Backswing': 'MB',
+        'Top': 'T',
+        'Mid-Downswing': 'MD',
+        'Impact': 'I',
+        'Mid-Follow-Through': 'MFT',
+        'Finish': 'F'
+    }
+
+    # Define the correct order of events
+    correct_order = ['A', 'TU', 'MB', 'T', 'MD', 'I', 'MFT', 'F']
+    
+    # Create a mapping from the original index to the new index
+    index_mapping = {name: i for i, name in enumerate(class_names)}
+    
+    # Reorder the confusion matrix
+    cm_ordered = np.zeros((len(correct_order), len(correct_order)))
+    for i, row in enumerate(class_names):
+        for j, col in enumerate(class_names):
+            new_i = correct_order.index(name_to_abbr[row])
+            new_j = correct_order.index(name_to_abbr[col])
+            cm_ordered[new_i, new_j] = cm[i, j]
+    
+    # Convert to percentages
+    cm_percent = (cm_ordered / cm_ordered.sum(axis=1, keepdims=True) * 100).round(2)
+    
+    plt.figure(figsize=(12, 10))
+    sns.heatmap(cm_percent, annot=True, fmt='.2f', cmap='Blues', 
+                xticklabels=correct_order,
+                yticklabels=correct_order,
+                vmin=0, vmax=100)
+    plt.title(f'Confusion Matrix (%) - {model_name}')
     plt.xlabel('Predicted')
-    plt.ylabel('True')
+    plt.ylabel('Actual')
+    plt.xticks(rotation=45, ha='right')
+    plt.yticks(rotation=0)
+    plt.tight_layout()
     plt.savefig(os.path.join(MODEL_SAVE_PATH, f'confusion_matrix_{model_name}.png'))
     plt.close()
 
@@ -195,6 +230,9 @@ def plot_roc_curves(results, X, y):
 X, y = load_and_prepare_data(CSV_FOLDER)
 le = LabelEncoder()
 y_encoded = le.fit_transform(y)
+
+# Ensure that the LabelEncoder uses the correct abbreviations
+le.classes_ = np.array(['A', 'TU', 'MB', 'T', 'MD', 'I', 'MFT', 'F'])
 
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
